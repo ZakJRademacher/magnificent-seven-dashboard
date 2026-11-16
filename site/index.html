@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Magnificent Seven Dashboard</title>
+<meta name="description" content="Risk and return for Apple, Microsoft, Alphabet, Amazon, Nvidia, Meta and Tesla against the S&P 500, refreshed every trading day.">
+<style>
+  :root {
+    color-scheme: dark;
+    --surface: #0b0e11;
+    --panel: #12161b;
+    --grid: #232a32;
+    --text: #eef1f4;
+    --text-2: #b6bec8;
+    --text-3: #7d8792;
+    --accent: #f5a623;
+    --gain: #0ca30c;
+    --loss: #e66767;
+    --sans: "Segoe UI", Inter, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Consolas, Menlo, "DejaVu Sans Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--surface); color: var(--text); font: 14px/1.45 var(--sans); }
+  .page { max-width: 1440px; margin: 0 auto; padding: 28px 28px 48px; }
+
+  header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 24px;
+           border-bottom: 1.5px solid var(--accent); padding-bottom: 14px; }
+  h1 { margin: 0; font-size: 32px; letter-spacing: .02em; }
+  .asof { font: 14px var(--mono); color: var(--accent); text-transform: uppercase; }
+  .sub { width: 100%; color: var(--text-3); font-size: 14px; }
+
+  .controls { display: flex; align-items: center; gap: 8px; margin: 18px 0 14px; flex-wrap: wrap; }
+  .controls .label { color: var(--text-3); font-size: 13px; margin-right: 4px; }
+  .range button { font: 600 13px var(--mono); color: var(--text-2); background: var(--panel); border: 1px solid var(--grid);
+                  padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+  .range button:hover { border-color: var(--text-3); }
+  .range button[aria-pressed="true"] { color: var(--surface); background: var(--accent); border-color: var(--accent); }
+
+  .tape { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 22px; }
+  .tile { background: var(--panel); border: 1px solid var(--grid); border-radius: 8px; padding: 10px 12px 9px; }
+  .tile .name { display: flex; align-items: center; gap: 7px; font-weight: 700; font-size: 14px; }
+  .tile .value { font: 700 23px var(--mono); margin: 4px 0 2px; white-space: nowrap; }
+  .tile .value .arrow { font-size: 14px; margin-right: 6px; vertical-align: 3px; }
+  .tile .meta { font: 11.5px var(--mono); color: var(--text-3); white-space: nowrap; }
+
+  .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 22px; }
+  .grid.second { grid-template-columns: 1fr 2fr; margin-top: 22px; }
+  .card { background: var(--panel); border: 1px solid var(--grid); border-radius: 8px; padding: 16px 16px 12px; min-width: 0; }
+  .card h2 { margin: 0; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+  .card .note { margin: 2px 0 10px; color: var(--text-3); font-size: 13px; }
+  .chart { position: relative; width: 100%; }
+  svg { display: block; overflow: visible; }
+  svg text { font-family: var(--sans); }
+  .tick text { fill: var(--text-3); font-size: 11.5px; }
+  .tick line { stroke: var(--grid); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0 0 6px; }
+  .legend button { display: flex; align-items: center; gap: 6px; background: none; border: 0; padding: 3px 0; cursor: pointer;
+                   color: var(--text-2); font: 12.5px var(--sans); }
+  .legend button[aria-pressed="false"] { opacity: .35; }
+  .key { display: inline-block; width: 14px; height: 2.5px; border-radius: 2px; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; }
+  .diamond { display: inline-block; width: 8px; height: 8px; transform: rotate(45deg); }
+
+  .dd-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px 16px; }
+  .dd h3 { display: flex; justify-content: space-between; margin: 0 0 3px; font-size: 13px; }
+  .dd h3 span { font: 400 12px var(--mono); color: var(--text-2); }
+
+  table { width: 100%; border-collapse: collapse; font: 13px var(--mono); }
+  th, td { padding: 7px 10px; text-align: right; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+  th { color: var(--text-3); font: 600 12px var(--sans); }
+  th:first-child, td:first-child { text-align: left; font-family: var(--sans); }
+  td .nm { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; }
+  .scroll { overflow-x: auto; }
+  .verdict { margin: 10px 0 0; color: var(--text-2); font-size: 13.5px; }
+
+  .tooltip { position: fixed; z-index: 10; pointer-events: none; background: #1a2027; border: 1px solid #333c46;
+             border-radius: 6px; padding: 8px 10px; font-size: 12.5px; box-shadow: 0 6px 18px rgba(0,0,0,.45);
+             display: none; min-width: 150px; }
+  .tooltip .head { color: var(--text-3); font: 12px var(--mono); margin-bottom: 5px; }
+  .tooltip .row { display: flex; align-items: center; gap: 8px; line-height: 1.6; }
+  .tooltip .row b { font: 700 12.5px var(--mono); color: var(--text); min-width: 64px; text-align: right; }
+  .tooltip .row span:last-child { color: var(--text-2); }
+
+  footer { margin-top: 28px; color: var(--text-3); font-size: 13px; display: grid; gap: 6px; }
+  footer a { color: var(--text-2); }
+  .error { margin: 40px 0; padding: 16px; border: 1px solid var(--loss); border-radius: 8px; color: var(--text-2); }
+
+  @media (max-width: 1000px) {
+    .grid, .grid.second { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .page { padding: 18px 14px 36px; }
+    h1 { font-size: 24px; }
+    .dd-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>MAGNIFICENT SEVEN</h1>
+    <div class="asof" id="asof"></div>
+    <div class="sub" id="sub">Loading prices…</div>
+  </header>
+
+  <div class="controls">
+    <span class="label">Period</span>
+    <div class="range" id="range" role="group" aria-label="Time period"></div>
+  </div>
+
+  <section class="tape" id="tape" aria-label="Total return by ticker"></section>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Growth of $100</h2>
+      <p class="note">Log scale, so equal distances mean equal percent gains. Click a name to hide or show it.</p>
+      <div class="legend" id="legend"></div>
+      <div class="chart" id="growth"></div>
+    </section>
+    <section class="card">
+      <h2>Risk vs return</h2>
+      <p class="note">Up and to the left is better: more growth, less bounce</p>
+      <div class="chart" id="scatter"></div>
+    </section>
+  </div>
+
+  <div class="grid second">
+    <section class="card">
+      <h2>Do they move together?</h2>
+      <p class="note">Correlation of daily returns. 1.00 = perfectly in step</p>
+      <div class="chart" id="corr"></div>
+    </section>
+    <section class="card">
+      <h2>Drawdowns</h2>
+      <p class="note">How far below its previous peak each one sat</p>
+      <div class="dd-grid" id="dd"></div>
+    </section>
+  </div>
+
+  <div class="grid second">
+    <section class="card">
+      <h2>Honesty check</h2>
+      <p class="note">Does "tomorrow repeats today" beat simply guessing "up" every day?</p>
+      <div class="scroll"><table id="honesty"></table></div>
+      <p class="verdict" id="verdict"></p>
+    </section>
+    <section class="card">
+      <h2>All metrics</h2>
+      <p class="note">Every number on this page, for the selected period</p>
+      <div class="scroll"><table id="metrics"></table></div>
+    </section>
+  </div>
+
+  <footer>
+    <div>Equal-weight M7 holds one-seventh in each stock, rebalanced daily. Sharpe ratio uses a 4% yearly risk-free rate. Volatility is the yearly standard deviation of daily returns.</div>
+    <div>The seven were picked because they won, so looking back overstates what choosing in advance would have earned. This is analysis practice, not investment advice.</div>
+    <div>Built by Zak Rademacher · <a href="https://github.com/ZakJRademacher/magnificent-seven-dashboard">Source on GitHub</a></div>
+  </footer>
+</div>
+<div class="tooltip" id="tip" role="status"></div>
+
+<script>
+"use strict";
+
+// ---------------------------------------------------------------- settings
+const RISK_FREE = 0.04;
+const TRADING_DAYS = 252;
+const PORT = "M7", BENCH = "SPY";
+const COLORS = {
+  AAPL: "#3987e5", MSFT: "#d95926", GOOGL: "#199e70", AMZN: "#c98500",
+  NVDA: "#d55181", META: "#0ca30c", TSLA: "#9085e9", M7: "#eef1f4", SPY: "#7d8792",
+};
+const LABELS = { M7: "EQ-WT M7", SPY: "S&P 500" };
+const label = k => LABELS[k] || k;
+const RANGES = [["1Y", 1], ["2Y", 2], ["3Y", 3], ["MAX", null]];
+const NS = "http://www.w3.org/2000/svg";
+
+let DATA, TICKERS, view, hidden = new Set();
+
+// ---------------------------------------------------------------- formatting
+const fmtPct = (x, d = 0) => {
+  const r = Number((x * 100).toFixed(d));
+  return (r > 0 ? "+" : r < 0 ? "-" : "+") + Math.abs(r).toFixed(d) + "%";
+};
+const fmtPlain = (x, d = 0) => (x * 100).toFixed(d) + "%";
+const fmtMoney = v => "$" + Math.round(v).toLocaleString("en-US");
+const parseDate = s => new Date(s + "T00:00:00Z");
+const fmtDate = (s, opts = { month: "short", day: "numeric", year: "numeric" }) =>
+  parseDate(s).toLocaleDateString("en-US", { ...opts, timeZone: "UTC" });
+
+// ---------------------------------------------------------------- math
+const mean = a => a.reduce((s, v) => s + v, 0) / a.length;
+const std = a => { const m = mean(a); return Math.sqrt(a.reduce((s, v) => s + (v - m) ** 2, 0) / (a.length - 1)); };
+const corr = (a, b) => {
+  const ma = mean(a), mb = mean(b);
+  let sab = 0, saa = 0, sbb = 0;
+  for (let i = 0; i < a.length; i++) { const da = a[i] - ma, db = b[i] - mb; sab += da * db; saa += da * da; sbb += db * db; }
+  return sab / Math.sqrt(saa * sbb);
+};
+
+function compute(startIdx) {
+  const dates = DATA.dates.slice(startIdx);
+  const names = [...TICKERS, BENCH];
+  const ret = {};
+  for (const k of names) {
+    const p = DATA.prices[k].slice(startIdx);
+    ret[k] = p.slice(1).map((v, i) => v / p[i] - 1);
+  }
+  ret[PORT] = ret[TICKERS[0]].map((_, i) => mean(TICKERS.map(t => ret[t][i])));
+
+  const all = [...TICKERS, PORT, BENCH];
+  const growth = {}, drawdown = {}, metrics = {};
+  const years = ret[PORT].length / TRADING_DAYS;
+  for (const k of all) {
+    let g = 100, peak = 100;
+    const gs = [100], ds = [0];
+    for (const r of ret[k]) { g *= 1 + r; peak = Math.max(peak, g); gs.push(g); ds.push(g / peak - 1); }
+    growth[k] = gs; drawdown[k] = ds;
+    const total = gs[gs.length - 1] / 100 - 1;
+    const cagr = Math.pow(1 + total, 1 / years) - 1;
+    const vol = std(ret[k]) * Math.sqrt(TRADING_DAYS);
+    metrics[k] = {
+      total, cagr, vol, sharpe: (cagr - RISK_FREE) / vol,
+      maxdd: Math.min(...ds), best: Math.max(...ret[k]), worst: Math.min(...ret[k]),
+    };
+  }
+  const corrM = TICKERS.map(a => TICKERS.map(b => corr(ret[a], ret[b])));
+
+  // Honesty check: momentum rule ("tomorrow goes the way today went") vs always guessing up.
+  const honesty = {};
+  for (const t of TICKERS) {
+    const up = ret[t].map(r => r > 0);
+    let alwaysUp = 0, momentum = 0;
+    for (let i = 1; i < up.length; i++) { alwaysUp += up[i]; momentum += up[i] === up[i - 1]; }
+    const n = up.length - 1;
+    honesty[t] = { alwaysUp: alwaysUp / n, momentum: momentum / n };
+  }
+  const noise = 2 * Math.sqrt(0.25 / (ret[PORT].length - 1));
+  return { dates, growth, drawdown, metrics, corrM, honesty, noise, all, days: ret[PORT].length };
+}
+
+// ---------------------------------------------------------------- svg helpers
+function el(name, attrs = {}, parent) {
+  const e = document.createElementNS(NS, name);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function text(parent, x, y, str, attrs = {}) {
+  const t = el("text", { x, y, ...attrs }, parent);
+  t.textContent = str;
+  return t;
+}
+const linear = (d0, d1, r0, r1) => v => r0 + (v - d0) / (d1 - d0) * (r1 - r0);
+function niceTicks(lo, hi, count = 5) {
+  const step0 = (hi - lo) / count, mag = 10 ** Math.floor(Math.log10(step0));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s >= step0);
+  const out = [];
+  for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(10));
+  return out;
+}
+function makeSvg(container, height) {
+  container.replaceChildren();
+  const width = container.clientWidth;
+  const svg = el("svg", { width, height, viewBox: `0 0 ${width} ${height}` }, container);
+  return { svg, width };
+}
+
+// ---------------------------------------------------------------- tooltip
+const tip = document.getElementById("tip");
+function showTip(evt, head, rows) {
+  tip.replaceChildren();
+  const h = document.createElement("div"); h.className = "head"; h.textContent = head; tip.appendChild(h);
+  for (const r of rows) {
+    const row = document.createElement("div"); row.className = "row";
+    if (r.color) { const k = document.createElement("span"); k.className = "key"; k.style.background = r.color; row.appendChild(k); }
+    const b = document.createElement("b"); b.textContent = r.value; row.appendChild(b);
+    const s = document.createElement("span"); s.textContent = r.label; row.appendChild(s);
+    tip.appendChild(row);
+  }
+  tip.style.display = "block";
+  const pad = 14, w = tip.offsetWidth, h2 = tip.offsetHeight;
+  let x = evt.clientX + pad, y = evt.clientY + pad;
+  if (x + w > innerWidth - 8) x = evt.clientX - w - pad;
+  if (y + h2 > innerHeight - 8) y = innerHeight - h2 - 8;
+  tip.style.left = Math.max(8, x) + "px"; tip.style.top = Math.max(8, y) + "px";
+}
+const hideTip = () => { tip.style.display = "none"; };
+
+// ---------------------------------------------------------------- x-axis ticks for dates
+function dateTicks(dates) {
+  const span = (parseDate(dates[dates.length - 1]) - parseDate(dates[0])) / 864e5;
+  const ticks = [];
+  for (let i = 1; i < dates.length; i++) {
+    const a = dates[i - 1], b = dates[i];
+    if (span > 800 ? a.slice(0, 4) !== b.slice(0, 4)
+        : a.slice(5, 7) !== b.slice(5, 7) && (+b.slice(5, 7) - 1) % (span > 400 ? 3 : 2) === 0) {
+      ticks.push([i, span > 800 ? b.slice(0, 4) : fmtDate(b, { month: "short", year: "2-digit", timeZone: "UTC" })]);
+    }
+  }
+  return ticks;
+}
+
+// ---------------------------------------------------------------- ticker tape
+function renderTape(v) {
+  const tape = document.getElementById("tape");
+  tape.replaceChildren();
+  for (const k of v.all) {
+    const m = v.metrics[k];
+    const tile = document.createElement("div"); tile.className = "tile";
+    const name = document.createElement("div"); name.className = "name";
+    const mark = document.createElement("span");
+    mark.className = TICKERS.includes(k) ? "dot" : "diamond"; mark.style.background = COLORS[k];
+    name.append(mark, document.createTextNode(label(k)));
+    const value = document.createElement("div"); value.className = "value";
+    const up = Number((m.total * 100).toFixed(0)) >= 0;
+    const arrow = document.createElement("span"); arrow.className = "arrow";
+    arrow.textContent = up ? "▲" : "▼"; arrow.style.color = up ? "var(--gain)" : "var(--loss)";
+    arrow.setAttribute("aria-label", up ? "up" : "down");
+    value.append(arrow, document.createTextNode(fmtPct(m.total)));
+    const meta = document.createElement("div"); meta.className = "meta";
+    meta.textContent = `CAGR ${fmtPct(m.cagr)}  SR ${m.sharpe.toFixed(2)}`;
+    tile.append(name, value, meta);
+    tape.appendChild(tile);
+  }
+}
+
+// ---------------------------------------------------------------- legend
+function renderLegend() {
+  const lg = document.getElementById("legend");
+  lg.replaceChildren();
+  for (const k of [...TICKERS, BENCH]) {
+    const b = document.createElement("button");
+    b.setAttribute("aria-pressed", String(!hidden.has(k)));
+    const key = document.createElement("span"); key.className = "key"; key.style.background = COLORS[k];
+    b.append(key, document.createTextNode(label(k)));
+    b.onclick = () => { hidden.has(k) ? hidden.delete(k) : hidden.add(k); renderLegend(); renderGrowth(view); };
+    lg.appendChild(b);
+  }
+}
+
+// ---------------------------------------------------------------- growth of $100
+function renderGrowth(v) {
+  const box = document.getElementById("growth");
+  const height = Math.max(300, Math.min(420, box.clientWidth * 0.5));
+  const { svg, width } = makeSvg(box, height);
+  const names = [...TICKERS, BENCH].filter(k => !hidden.has(k));
+  const showLabels = width > 560;
+  const m = { t: 10, r: showLabels ? 118 : 12, b: 26, l: 54 };
+  const n = v.dates.length;
+  const x = linear(0, n - 1, m.l, width - m.r);
+
+  let lo = Infinity, hi = -Infinity;
+  for (const k of names) for (const g of v.growth[k]) { lo = Math.min(lo, g); hi = Math.max(hi, g); }
+  if (!names.length) { lo = 50; hi = 200; }
+  lo = Math.min(lo, 100) * 0.95; hi = Math.max(hi, 100) * 1.05;
+  const y = val => linear(Math.log10(lo), Math.log10(hi), height - m.b, m.t)(Math.log10(val));
+
+  // gridlines and axes
+  const g = el("g", {}, svg);
+  const yTicks = [6.25, 12.5, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400].filter(t => t >= lo && t <= hi);
+  for (const t of yTicks) {
+    const gy = el("g", { class: "tick" }, g);
+    el("line", { x1: m.l, x2: width - m.r, y1: y(t), y2: y(t), "stroke-width": t === 100 ? 1 : .8,
+                 stroke: t === 100 ? "#7d8792" : "var(--grid)" }, gy);
+    text(gy, m.l - 8, y(t) + 4, fmtMoney(t), { "text-anchor": "end" });
+  }
+  for (const [i, lab] of dateTicks(v.dates)) {
+    text(el("g", { class: "tick" }, g), x(i), height - 6, lab, { "text-anchor": "middle" });
+  }
+
+  // lines: benchmark first so the stocks sit on top
+  const order = names.includes(BENCH) ? [BENCH, ...names.filter(k => k !== BENCH)] : names;
+  for (const k of order) {
+    const d = v.growth[k].map((val, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(val).toFixed(1)).join("");
+    el("path", { d, fill: "none", stroke: COLORS[k], "stroke-width": k === BENCH ? 1.6 : 2,
+                 "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+  }
+
+  // end labels, nudged apart so they don't overlap
+  if (showLabels && names.length) {
+    const ends = names.map(k => ({ k, val: v.growth[k][n - 1], y: y(v.growth[k][n - 1]) })).sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i++) ends[i].ly = Math.max(ends[i].y, (ends[i - 1].ly ?? ends[i - 1].y) + 16);
+    ends[0].ly = ends[0].y;
+    const overflow = ends[ends.length - 1].ly - (height - m.b);
+    if (overflow > 0) for (const e of ends) e.ly -= overflow;
+    for (let i = ends.length - 2; i >= 0; i--) ends[i].ly = Math.min(ends[i].ly, ends[i + 1].ly - 16);
+    const xe = x(n - 1);
+    for (const e of ends) {
+      el("line", { x1: xe, y1: e.y, x2: xe + 12, y2: e.ly, stroke: "var(--grid)" }, svg);
+      el("circle", { cx: xe, cy: e.y, r: 4, fill: COLORS[e.k], stroke: "var(--panel)", "stroke-width": 2 }, svg);
+      text(svg, xe + 16, e.ly + 4, label(e.k), { fill: "var(--text-2)", "font-size": 12 });
+      text(svg, width - 2, e.ly + 4, fmtMoney(e.val), { fill: "var(--text-2)", "font-size": 12,
+           "text-anchor": "end", "font-family": "var(--mono)" });
+    }
+  }
+
+  // crosshair + one tooltip listing every series
+  const cross = el("line", { y1: m.t, y2: height - m.b, stroke: "#7d8792", "stroke-width": 1, visibility: "hidden" }, svg);
+  const marks = el("g", { visibility: "hidden" }, svg);
+  const hit = el("rect", { x: m.l, y: m.t, width: Math.max(0, width - m.l - m.r), height: height - m.t - m.b,
+                           fill: "transparent", tabindex: 0, "aria-label": "Growth chart. Use arrow keys to move through dates." }, svg);
+  let idx = n - 1;
+  const show = (evt) => {
+    const px = x(idx);
+    cross.setAttribute("x1", px); cross.setAttribute("x2", px); cross.setAttribute("visibility", "visible");
+    marks.replaceChildren(); marks.setAttribute("visibility", "visible");
+    for (const k of names) el("circle", { cx: px, cy: y(v.growth[k][idx]), r: 4, fill: COLORS[k],
+                                          stroke: "var(--panel)", "stroke-width": 2 }, marks);
+    const rows = names.map(k => ({ k, val: v.growth[k][idx] })).sort((a, b) => b.val - a.val)
+      .map(r => ({ color: COLORS[r.k], value: fmtMoney(r.val), label: label(r.k) }));
+    showTip(evt, fmtDate(v.dates[idx]), rows);
+  };
+  const toIdx = clientX => {
+    const r = svg.getBoundingClientRect();
+    return Math.max(0, Math.min(n - 1, Math.round((clientX - r.left - m.l) / (width - m.l - m.r) * (n - 1))));
+  };
+  hit.addEventListener("pointermove", e => { idx = toIdx(e.clientX); show(e); });
+  hit.addEventListener("pointerleave", () => { cross.setAttribute("visibility", "hidden"); marks.setAttribute("visibility", "hidden"); hideTip(); });
+  hit.addEventListener("keydown", e => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    idx = Math.max(0, Math.min(n - 1, idx + (e.key === "ArrowRight" ? 1 : -1) * (e.shiftKey ? 21 : 1)));
+    const r = svg.getBoundingClientRect();
+    show({ clientX: r.left + x(idx), clientY: r.top + m.t + 20 });
+  });
+  hit.addEventListener("blur", () => hit.dispatchEvent(new Event("pointerleave")));
+}
+
+// ---------------------------------------------------------------- risk vs return
+function renderScatter(v) {
+  const box = document.getElementById("scatter");
+  const height = Math.max(300, Math.min(420, box.clientWidth * 0.95));
+  const { svg, width } = makeSvg(box, height);
+  const m = { t: 12, r: 16, b: 40, l: 50 };
+  const pts = v.all.map(k => ({ k, vx: v.metrics[k].vol, vy: v.metrics[k].cagr }));
+  const xs = pts.map(p => p.vx), ys = pts.map(p => p.vy);
+  const padX = (Math.max(...xs) - Math.min(...xs)) * 0.15, padY = (Math.max(...ys) - Math.min(...ys)) * 0.15;
+  const x0 = Math.max(0, Math.min(...xs) - padX), x1 = Math.max(...xs) + padX;
+  const y0 = Math.min(0, Math.min(...ys) - padY), y1 = Math.max(...ys) + padY;
+  const x = linear(x0, x1, m.l, width - m.r), y = linear(y0, y1, height - m.b, m.t);
+
+  for (const t of niceTicks(y0, y1, 5)) {
+    const g = el("g", { class: "tick" }, svg);
+    el("line", { x1: m.l, x2: width - m.r, y1: y(t), y2: y(t), stroke: t === 0 ? "#7d8792" : "var(--grid)" }, g);
+    text(g, m.l - 8, y(t) + 4, fmtPlain(t), { "text-anchor": "end" });
+  }
+  for (const t of niceTicks(x0, x1, 5)) {
+    const g = el("g", { class: "tick" }, svg);
+    el("line", { x1: x(t), x2: x(t), y1: m.t, y2: height - m.b }, g);
+    text(g, x(t), height - m.b + 16, fmtPlain(t), { "text-anchor": "middle" });
+  }
+  text(svg, (m.l + width - m.r) / 2, height - 4, "Volatility (yearly)", { "text-anchor": "middle", fill: "var(--text-2)", "font-size": 12 });
+  text(svg, 0, 0, "Growth per year (CAGR)", { transform: `translate(12 ${(m.t + height - m.b) / 2}) rotate(-90)`,
+       "text-anchor": "middle", fill: "var(--text-2)", "font-size": 12 });
+
+  // reference diamonds behind, stocks on top
+  const ordered = [...pts.filter(p => !TICKERS.includes(p.k)), ...pts.filter(p => TICKERS.includes(p.k))];
+  const placed = [];
+  const overlaps = (b) => placed.some(o => b.x < o.x + o.w && b.x + b.w > o.x && b.y < o.y + o.h && b.y + b.h > o.y);
+  for (const p of ordered) {
+    const cx = x(p.vx), cy = y(p.vy), ref = !TICKERS.includes(p.k);
+    const g = el("g", { tabindex: 0, "aria-label": `${label(p.k)}: growth ${fmtPct(p.vy, 1)} per year, volatility ${fmtPlain(p.vx, 1)}` }, svg);
+    if (ref) el("rect", { x: cx - 6, y: cy - 6, width: 12, height: 12, transform: `rotate(45 ${cx} ${cy})`,
+                          fill: "none", stroke: COLORS[p.k], "stroke-width": 2 }, g);
+    else el("circle", { cx, cy, r: 6.5, fill: COLORS[p.k], stroke: "var(--panel)", "stroke-width": 2 }, g);
+    el("circle", { cx, cy, r: 14, fill: "transparent" }, g);  // bigger hit target
+    placed.push({ x: cx - 8, y: cy - 8, w: 16, h: 16 });
+    const tipRows = () => [
+      { value: fmtPct(v.metrics[p.k].cagr, 1), label: "growth per year" },
+      { value: fmtPlain(v.metrics[p.k].vol, 1), label: "volatility" },
+      { value: v.metrics[p.k].sharpe.toFixed(2), label: "Sharpe ratio" },
+    ];
+    g.addEventListener("pointermove", e => showTip(e, label(p.k), tipRows()));
+    g.addEventListener("pointerleave", hideTip);
+    g.addEventListener("focus", () => { const r = g.getBoundingClientRect(); showTip({ clientX: r.right, clientY: r.bottom }, label(p.k), tipRows()); });
+    g.addEventListener("blur", hideTip);
+    p.cx = cx; p.cy = cy;
+  }
+  // labels: try right, below, above, left; keep the first spot that doesn't collide
+  for (const p of ordered) {
+    const str = label(p.k), w = str.length * 7 + 4, h = 14;
+    const spots = [[p.cx + 11, p.cy - 7], [p.cx - w / 2, p.cy + 10], [p.cx - w / 2, p.cy - 24], [p.cx - w - 11, p.cy - 7]];
+    let s = spots.find(([sx, sy]) => !overlaps({ x: sx, y: sy, w, h }) && sx > m.l && sx + w < width) || spots[0];
+    placed.push({ x: s[0], y: s[1], w, h });
+    text(svg, s[0], s[1] + 11, str, { fill: "var(--text-2)", "font-size": 12, "pointer-events": "none" });
+  }
+}
+
+// ---------------------------------------------------------------- correlation heatmap
+function corrColor(c) {
+  // blue (opposite) -> gray (unrelated) -> red (together)
+  const lerp = (a, b, t) => Math.round(a + (b - a) * t);
+  const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const [a, b] = c >= 0 ? [hex("#2a3038"), hex("#e66767")] : [hex("#2a3038"), hex("#3987e5")];
+  const t = Math.min(1, Math.abs(c));
+  return `rgb(${lerp(a[0], b[0], t)},${lerp(a[1], b[1], t)},${lerp(a[2], b[2], t)})`;
+}
+function renderCorr(v) {
+  const box = document.getElementById("corr");
+  const n = TICKERS.length, lab = 48;
+  const size = Math.min(box.clientWidth, 480);
+  const cell = (size - lab) / n;
+  const { svg } = makeSvg(box, lab + cell * n);
+  for (let i = 0; i < n; i++) {
+    text(svg, lab - 8, lab + cell * i + cell / 2 + 4, TICKERS[i], { "text-anchor": "end", fill: "var(--text-2)", "font-size": 11.5 });
+    text(svg, lab + cell * i + cell / 2, lab - 10, TICKERS[i], { "text-anchor": "middle", fill: "var(--text-2)", "font-size": 11.5 });
+    for (let j = 0; j < n; j++) {
+      const c = v.corrM[i][j];
+      const g = el("g", { tabindex: 0, "aria-label": `${TICKERS[i]} and ${TICKERS[j]}: ${c.toFixed(2)}` }, svg);
+      const r = el("rect", { x: lab + cell * j + 1, y: lab + cell * i + 1, width: cell - 2, height: cell - 2, rx: 3, fill: corrColor(c) }, g);
+      if (cell > 34) text(g, lab + cell * j + cell / 2, lab + cell * i + cell / 2 + 4, c.toFixed(2),
+                          { "text-anchor": "middle", fill: "var(--text)", "font-size": cell > 52 ? 12 : 10.5, "font-family": "var(--mono)" });
+      const rows = () => [{ value: c.toFixed(2), label: "correlation" }];
+      g.addEventListener("pointermove", e => { r.setAttribute("stroke", "var(--text)"); showTip(e, `${TICKERS[i]} × ${TICKERS[j]}`, rows()); });
+      g.addEventListener("pointerleave", () => { r.removeAttribute("stroke"); hideTip(); });
+      g.addEventListener("focus", () => { const b = g.getBoundingClientRect(); showTip({ clientX: b.right, clientY: b.bottom }, `${TICKERS[i]} × ${TICKERS[j]}`, rows()); });
+      g.addEventListener("blur", hideTip);
+    }
+  }
+}
+
+// ---------------------------------------------------------------- drawdowns
+function renderDrawdowns(v) {
+  const box = document.getElementById("dd");
+  box.replaceChildren();
+  const names = [...TICKERS, PORT];
+  const floor = Math.floor(Math.min(...names.map(k => v.metrics[k].maxdd)) * 10) / 10;
+  for (const k of names) {
+    const card = document.createElement("div"); card.className = "dd";
+    const h = document.createElement("h3");
+    const worst = document.createElement("span"); worst.textContent = "worst " + fmtPct(v.metrics[k].maxdd);
+    h.append(document.createTextNode(label(k)), worst);
+    const chart = document.createElement("div"); chart.className = "chart";
+    card.append(h, chart); box.appendChild(card);
+
+    const height = 150;
+    const { svg, width } = makeSvg(chart, height);
+    const m = { t: 4, r: 2, b: 4, l: 36 };
+    const n = v.dates.length;
+    const x = linear(0, n - 1, m.l, width - m.r), y = linear(floor, 0, height - m.b, m.t);
+    for (const t of niceTicks(floor, 0, 3)) {
+      const g = el("g", { class: "tick" }, svg);
+      el("line", { x1: m.l, x2: width - m.r, y1: y(t), y2: y(t) }, g);
+      text(g, m.l - 5, y(t) + 4, fmtPlain(t), { "text-anchor": "end", "font-size": 10.5 });
+    }
+    const line = v.drawdown[k].map((d, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(d).toFixed(1)).join("");
+    el("path", { d: `${line}L${x(n - 1)} ${y(0)}L${x(0)} ${y(0)}Z`, fill: COLORS[k], "fill-opacity": .3 }, svg);
+    el("path", { d: line, fill: "none", stroke: COLORS[k], "stroke-width": 1.4, "stroke-linejoin": "round" }, svg);
+
+    const cross = el("line", { y1: m.t, y2: height - m.b, stroke: "#7d8792", visibility: "hidden" }, svg);
+    const hit = el("rect", { x: m.l, y: 0, width: Math.max(0, width - m.l - m.r), height, fill: "transparent" }, svg);
+    hit.addEventListener("pointermove", e => {
+      const r = svg.getBoundingClientRect();
+      const i = Math.max(0, Math.min(n - 1, Math.round((e.clientX - r.left - m.l) / (width - m.l - m.r) * (n - 1))));
+      cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("visibility", "visible");
+      showTip(e, fmtDate(v.dates[i]), [{ color: COLORS[k], value: fmtPct(v.drawdown[k][i]), label: label(k) + " below peak" }]);
+    });
+    hit.addEventListener("pointerleave", () => { cross.setAttribute("visibility", "hidden"); hideTip(); });
+  }
+}
+
+// ---------------------------------------------------------------- tables
+function cellRow(table, cells, header = false) {
+  const tr = document.createElement("tr");
+  cells.forEach((c, i) => {
+    const td = document.createElement(header ? "th" : "td");
+    if (c instanceof Node) td.appendChild(c); else td.textContent = c;
+    tr.appendChild(td);
+  });
+  table.appendChild(tr);
+}
+function nameCell(k) {
+  const wrap = document.createElement("span"); wrap.className = "nm";
+  const mk = document.createElement("span");
+  mk.className = TICKERS.includes(k) ? "dot" : "diamond"; mk.style.background = COLORS[k];
+  wrap.append(mk, document.createTextNode(label(k)));
+  return wrap;
+}
+function renderTables(v) {
+  const h = document.getElementById("honesty"); h.replaceChildren();
+  cellRow(h, ["", "Always up", "Momentum rule", "Edge"], true);
+  let beat = [];
+  for (const t of TICKERS) {
+    const r = v.honesty[t], edge = r.momentum - r.alwaysUp;
+    if (edge > v.noise) beat.push(t);
+    cellRow(h, [nameCell(t), fmtPlain(r.alwaysUp, 1), fmtPlain(r.momentum, 1), fmtPct(edge, 1)]);
+  }
+  document.getElementById("verdict").textContent =
+    `Over ${v.days.toLocaleString("en-US")} days, any edge inside ±${fmtPlain(v.noise, 1)} is indistinguishable from luck. ` +
+    (beat.length ? `Beat the baseline by more than that: ${beat.join(", ")}.` : "No stock clears that bar, so the momentum rule finds nothing real here.");
+
+  const t = document.getElementById("metrics"); t.replaceChildren();
+  cellRow(t, ["", "Total", "CAGR", "Volatility", "Sharpe", "Max DD", "Best day", "Worst day"], true);
+  for (const k of v.all) {
+    const m = v.metrics[k];
+    cellRow(t, [nameCell(k), fmtPct(m.total), fmtPct(m.cagr, 1), fmtPlain(m.vol, 1), m.sharpe.toFixed(2),
+                fmtPct(m.maxdd), fmtPct(m.best, 1), fmtPct(m.worst, 1)]);
+  }
+}
+
+// ---------------------------------------------------------------- page
+function startIndex(years) {
+  if (!years) return 0;
+  const last = parseDate(DATA.dates[DATA.dates.length - 1]);
+  const cut = new Date(last); cut.setUTCFullYear(cut.getUTCFullYear() - years);
+  const i = DATA.dates.findIndex(d => parseDate(d) >= cut);
+  return Math.max(0, i);
+}
+function renderAll() {
+  renderTape(view); renderGrowth(view); renderScatter(view); renderCorr(view); renderDrawdowns(view); renderTables(view);
+}
+function setRange(years, button) {
+  document.querySelectorAll("#range button").forEach(b => b.setAttribute("aria-pressed", String(b === button)));
+  view = compute(startIndex(years));
+  document.getElementById("sub").textContent =
+    `${fmtDate(view.dates[0])} to ${fmtDate(view.dates[view.dates.length - 1])}  ·  ${view.days.toLocaleString("en-US")} trading days  ·  ` +
+    `${DATA.source}  ·  refreshed ${DATA.updated.replace("T", " ").replace("Z", " UTC")}`;
+  renderAll();
+}
+
+async function main() {
+  try {
+    const res = await fetch("data.json", { cache: "no-cache" });
+    if (!res.ok) throw new Error(res.status);
+    DATA = await res.json();
+  } catch (err) {
+    const box = document.createElement("div"); box.className = "error";
+    box.textContent = "Couldn't load data.json. Run `python update_data.py`, then serve this folder with `python -m http.server` and open http://localhost:8000.";
+    document.querySelector("header").after(box);
+    document.getElementById("sub").textContent = "";
+    return;
+  }
+  TICKERS = DATA.tickers;
+  document.getElementById("asof").textContent = "As of " + fmtDate(DATA.dates[DATA.dates.length - 1], { day: "2-digit", month: "short", year: "numeric" });
+  const range = document.getElementById("range");
+  for (const [lab, years] of RANGES) {
+    const b = document.createElement("button"); b.textContent = lab;
+    b.onclick = () => setRange(years, b);
+    range.appendChild(b);
+  }
+  renderLegend();
+  setRange(null, range.lastChild);
+  // Redraw when the page width changes (charts are sized to their cards)
+  let raf, lastWidth = document.querySelector(".page").clientWidth;
+  new ResizeObserver(([entry]) => {
+    const w = Math.round(entry.contentRect.width);
+    if (w === lastWidth) return;
+    lastWidth = w;
+    cancelAnimationFrame(raf); raf = requestAnimationFrame(renderAll);
+  }).observe(document.querySelector(".page"));
+}
+main();
+</script>
+</body>
+</html>

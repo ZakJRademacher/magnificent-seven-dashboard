@@ -1,6 +1,8 @@
 # Magnificent Seven Dashboard
 
-A one-page risk and return dashboard for the seven largest US tech stocks (Apple, Microsoft, Alphabet, Amazon, Nvidia, Meta, Tesla), compared with the S&P 500.
+**Live dashboard: https://zakjrademacher.github.io/magnificent-seven-dashboard/**
+
+A risk and return dashboard for the seven largest US tech stocks (Apple, Microsoft, Alphabet, Amazon, Nvidia, Meta, Tesla), compared with the S&P 500. The live page refreshes itself every trading day.
 
 ![Magnificent Seven dashboard](magnificent_seven_dashboard.png)
 
@@ -11,21 +13,40 @@ A one-page risk and return dashboard for the seven largest US tech stocks (Apple
 - Do the seven actually diversify each other, or do they move together?
 - Does a simple "momentum" signal beat the dumb baseline of always guessing "up"?
 
-## How to run it
+## Two ways to use it
 
-1. Install the requirements: `pip install -r requirements.txt`
-2. Open `magnificent_seven_dashboard.ipynb` in JupyterLab and run all cells.
+**Live dashboard (`site/`).** An interactive web page with a 1Y / 2Y / 3Y / max period filter, hover readouts on every chart, and a full metrics table. Every weekday after the US market closes, a GitHub Actions workflow downloads fresh prices and republishes the page to GitHub Pages.
 
-The notebook reads prices from `m7_prices.csv` if it exists. To pull fresh prices from Yahoo Finance, set `REFRESH = True` in the first code cell. Tickers, start date, benchmark and risk-free rate are set in the same cell.
+**Analysis notebook (`magnificent_seven_dashboard.ipynb`).** The original step-by-step analysis: load prices, check the data, compute the metrics, draw the static dashboard image, and run the honesty check.
+
+## How the live page updates
+
+1. `.github/workflows/update-dashboard.yml` runs on a schedule (weekdays at 22:17 UTC), on every push to `main`, and on demand from the Actions tab.
+2. It runs `update_data.py`, which downloads daily adjusted closes from Yahoo Finance and writes `site/data.json`.
+3. It publishes the `site/` folder to GitHub Pages. The page computes every metric in the browser from that data.
+
+If a download fails, the workflow stops and the previous version of the page stays live.
+
+## Run it locally
+
+```
+pip install -r requirements.txt
+python update_data.py            # or: python update_data.py --from-csv  (offline, uses m7_prices.csv)
+python -m http.server --directory site
+```
+
+Then open http://localhost:8000.
 
 ## Files
 
 | File | What it is |
 |---|---|
-| `magnificent_seven_dashboard.ipynb` | The analysis: load, check, compute, chart, honesty check |
-| `m7_prices.csv` | Cached daily adjusted closes from Yahoo Finance (Nov 1, 2021 to Nov 16, 2026) |
-| `magnificent_seven_dashboard.png` | The dashboard image the notebook produces |
-| `requirements.txt` | Python packages used |
+| `site/index.html` | The live dashboard page |
+| `update_data.py` | Downloads prices and writes `site/data.json` |
+| `.github/workflows/update-dashboard.yml` | Daily refresh and deploy |
+| `magnificent_seven_dashboard.ipynb` | The analysis notebook |
+| `m7_prices.csv` | Cached prices the notebook uses (Nov 1, 2021 to Nov 16, 2026) |
+| `magnificent_seven_dashboard.png` | The static dashboard image from the notebook |
 
 ## Method notes
 
@@ -42,4 +63,4 @@ The notebook reads prices from `m7_prices.csv` if it exists. To pull fresh price
 
 ## Stack
 
-Python, pandas, NumPy, Matplotlib, yfinance, JupyterLab
+Python, pandas, NumPy, Matplotlib, yfinance, JupyterLab, plain HTML/SVG/JavaScript, GitHub Actions, GitHub Pages
