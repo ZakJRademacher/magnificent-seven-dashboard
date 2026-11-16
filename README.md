@@ -22,10 +22,14 @@ A risk and return dashboard for the seven largest US tech stocks (Apple, Microso
 ## How the live page updates
 
 1. `.github/workflows/update-dashboard.yml` runs on a schedule (weekdays at 22:17 UTC), on every push to `main`, and on demand from the Actions tab.
-2. It runs `update_data.py`, which downloads daily adjusted closes from Yahoo Finance and writes `site/data.json`.
+2. It runs `update_data.py`, which downloads daily adjusted closes and the 13-week Treasury bill yield from Yahoo Finance and writes `site/data.json`. If it runs before that day's close has settled (4:30pm New York time), it leaves that day out rather than publish a mid-day price.
 3. It publishes the `site/` folder to GitHub Pages. The page computes every metric in the browser from that data.
 
-If a download fails, the workflow stops and the previous version of the page stays live.
+If a download fails, the workflow stops and the previous version of the page stays live. If the Treasury bill download alone fails, the prices still publish and the Sharpe ratio falls back to a fixed 4% rate.
+
+Pull requests run the same data build as a check but don't deploy.
+
+GitHub turns off scheduled workflows in public repos after 60 days without activity. Each scheduled run re-enables its own workflow to reset that clock. As a backstop, the page shows a notice if its data is more than four days old.
 
 ## Run it locally
 
@@ -52,7 +56,8 @@ Then open http://localhost:8000.
 
 - Prices are adjusted for splits and dividends.
 - The equal-weight portfolio holds one-seventh in each stock and rebalances daily.
-- Sharpe ratio uses a 4% yearly risk-free rate.
+- Sharpe ratio on the live page: the average daily return above the risk-free rate, divided by the standard deviation of those excess returns, scaled to a year. The risk-free rate is the 13-week US Treasury bill yield for each day, which went from near 0% in 2021 to over 5% in 2023.
+- The notebook uses a simpler version: (CAGR − 4%) ÷ volatility. Its Sharpe ratios won't match the live page.
 - Volatility is the standard deviation of daily returns, scaled to a year (252 trading days).
 
 ## Limits
