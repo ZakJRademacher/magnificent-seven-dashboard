@@ -27,7 +27,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install pandas yfinance
-      - run: python update_data.py
+      - run: python refresh.py --no-chart
       - if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
       - if: github.event_name != 'pull_request'

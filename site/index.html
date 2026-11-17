@@ -163,14 +163,14 @@
 </div>
 <div class="tooltip" id="tip" role="status"></div>
 
+<script src="metrics.js"></script>
 <script>
 "use strict";
 
 // ---------------------------------------------------------------- settings
-const RISK_FREE_FALLBACK = 0.04;  // used only if data.json has no T-bill series
-const TRADING_DAYS = 252;
+// The metrics themselves live in metrics.js (window.M7), shared with the Python tests.
 const STALE_DAYS = 4;             // weekday refreshes leave at most a 3-day gap over a weekend
-const PORT = "M7", BENCH = "SPY";
+const PORT = M7.PORT, BENCH = "SPY";
 const COLORS = {
   AAPL: "#3987e5", MSFT: "#d95926", GOOGL: "#199e70", AMZN: "#c98500",
   NVDA: "#d55181", META: "#17becf", TSLA: "#9085e9", M7: "#eef1f4", SPY: "#7d8792",
@@ -192,64 +192,6 @@ const fmtMoney = v => "$" + Math.round(v).toLocaleString("en-US");
 const parseDate = s => new Date(s + "T00:00:00Z");
 const fmtDate = (s, opts = { month: "short", day: "numeric", year: "numeric" }) =>
   parseDate(s).toLocaleDateString("en-US", { ...opts, timeZone: "UTC" });
-
-// ---------------------------------------------------------------- math
-const mean = a => a.reduce((s, v) => s + v, 0) / a.length;
-const std = a => { const m = mean(a); return Math.sqrt(a.reduce((s, v) => s + (v - m) ** 2, 0) / (a.length - 1)); };
-const corr = (a, b) => {
-  const ma = mean(a), mb = mean(b);
-  let sab = 0, saa = 0, sbb = 0;
-  for (let i = 0; i < a.length; i++) { const da = a[i] - ma, db = b[i] - mb; sab += da * db; saa += da * da; sbb += db * db; }
-  return sab / Math.sqrt(saa * sbb);
-};
-
-function compute(startIdx) {
-  const dates = DATA.dates.slice(startIdx);
-  const names = [...TICKERS, BENCH];
-  const ret = {};
-  for (const k of names) {
-    const p = DATA.prices[k].slice(startIdx);
-    ret[k] = p.slice(1).map((v, i) => v / p[i] - 1);
-  }
-  ret[PORT] = ret[TICKERS[0]].map((_, i) => mean(TICKERS.map(t => ret[t][i])));
-  // Daily risk-free return for each return day (return i ends on dates[i + 1]).
-  const rfDaily = DATA.riskFree
-    ? DATA.riskFree.slice(startIdx + 1).map(y => y / TRADING_DAYS)
-    : ret[PORT].map(() => RISK_FREE_FALLBACK / TRADING_DAYS);
-
-  const all = [...TICKERS, PORT, BENCH];
-  const growth = {}, drawdown = {}, metrics = {};
-  const years = ret[PORT].length / TRADING_DAYS;
-  for (const k of all) {
-    let g = 100, peak = 100;
-    const gs = [100], ds = [0];
-    for (const r of ret[k]) { g *= 1 + r; peak = Math.max(peak, g); gs.push(g); ds.push(g / peak - 1); }
-    growth[k] = gs; drawdown[k] = ds;
-    const total = gs[gs.length - 1] / 100 - 1;
-    const cagr = Math.pow(1 + total, 1 / years) - 1;
-    const vol = std(ret[k]) * Math.sqrt(TRADING_DAYS);
-    const excess = ret[k].map((r, i) => r - rfDaily[i]);
-    const sharpe = mean(excess) / std(excess) * Math.sqrt(TRADING_DAYS);
-    metrics[k] = {
-      total, cagr, vol, sharpe,
-      maxdd: Math.min(...ds), best: Math.max(...ret[k]), worst: Math.min(...ret[k]),
-    };
-  }
-  const corrM = TICKERS.map(a => TICKERS.map(b => corr(ret[a], ret[b])));
-
-  // Honesty check: momentum rule ("tomorrow goes the way today went") vs always guessing up.
-  const honesty = {};
-  for (const t of TICKERS) {
-    const up = ret[t].map(r => r > 0);
-    let alwaysUp = 0, momentum = 0;
-    for (let i = 1; i < up.length; i++) { alwaysUp += up[i]; momentum += up[i] === up[i - 1]; }
-    const n = up.length - 1;
-    honesty[t] = { alwaysUp: alwaysUp / n, momentum: momentum / n };
-  }
-  const noise = 2 * Math.sqrt(0.25 / (ret[PORT].length - 1));
-  const rfAvg = mean(rfDaily) * TRADING_DAYS;
-  return { dates, growth, drawdown, metrics, corrM, honesty, noise, all, rfAvg, days: ret[PORT].length };
-}
 
 // ---------------------------------------------------------------- svg helpers
 function el(name, attrs = {}, parent) {
@@ -512,6 +454,7 @@ function renderCorr(v) {
   const box = document.getElementById("corr");
   const n = TICKERS.length, lab = 48;
   const size = Math.min(box.clientWidth, 480);
+  if (size <= lab) { box.replaceChildren(); return; }  // not laid out yet (e.g. hidden tab); redrawn on resize
   const cell = (size - lab) / n;
   const { svg } = makeSvg(box, lab + cell * n);
   for (let i = 0; i < n; i++) {
@@ -616,25 +559,18 @@ function renderTables(v) {
 }
 
 // ---------------------------------------------------------------- page
-function startIndex(years) {
-  if (!years) return 0;
-  const last = parseDate(DATA.dates[DATA.dates.length - 1]);
-  const cut = new Date(last); cut.setUTCFullYear(cut.getUTCFullYear() - years);
-  const i = DATA.dates.findIndex(d => parseDate(d) >= cut);
-  return Math.max(0, i);
-}
 function renderAll() {
   renderTape(view); renderGrowth(view); renderScatter(view); renderCorr(view); renderDrawdowns(view); renderTables(view);
 }
 function setRange(years, button) {
   document.querySelectorAll("#range button").forEach(b => b.setAttribute("aria-pressed", String(b === button)));
-  view = compute(startIndex(years));
+  view = M7.compute(DATA, M7.startIndex(DATA.dates, years));
   document.getElementById("sub").textContent =
     `${fmtDate(view.dates[0])} to ${fmtDate(view.dates[view.dates.length - 1])}  ·  ${view.days.toLocaleString("en-US")} trading days  ·  ` +
     `${DATA.source}  ·  refreshed ${DATA.updated.replace("T", " ").replace("Z", " UTC")}`;
   document.getElementById("sharpe-note").textContent = DATA.riskFree
     ? `Sharpe ratio is the yearly average daily return above the 13-week US Treasury bill yield (averaging ${fmtPlain(view.rfAvg, 1)} a year over this period), divided by its yearly volatility.`
-    : `Sharpe ratio is the yearly average daily return above a fixed ${fmtPlain(RISK_FREE_FALLBACK)} yearly risk-free rate, divided by its yearly volatility.`;
+    : `Sharpe ratio is the yearly average daily return above a fixed ${fmtPlain(M7.RISK_FREE_FALLBACK)} yearly risk-free rate, divided by its yearly volatility.`;
   renderAll();
 }
 
