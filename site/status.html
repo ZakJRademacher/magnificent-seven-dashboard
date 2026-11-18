@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pipeline Status · Magnificent Seven</title>
+<meta name="description" content="Whether each trading day's prices were published on time, every pipeline run, and every accepted dividend or split restatement.">
+<style>
+  :root {
+    color-scheme: dark;
+    --surface: #0b0e11; --panel: #12161b; --grid: #232a32;
+    --text: #eef1f4; --text-2: #b6bec8; --text-3: #7d8792;
+    --accent: #f5a623; --gain: #0ca30c; --loss: #e66767; --late: #c98500; --none: #2a3038;
+    --sans: "Segoe UI", Inter, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Consolas, Menlo, "DejaVu Sans Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--surface); color: var(--text); font: 14px/1.45 var(--sans); }
+  .page { max-width: 1100px; margin: 0 auto; padding: 28px 28px 48px; }
+  header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 24px;
+           border-bottom: 1.5px solid var(--accent); padding-bottom: 14px; }
+  h1 { margin: 0; font-size: 30px; letter-spacing: .02em; }
+  .asof { font: 14px var(--mono); color: var(--accent); text-transform: uppercase; }
+  .sub { width: 100%; color: var(--text-3); }
+  a { color: var(--text-2); }
+
+  .banner { display: flex; align-items: center; gap: 12px; margin: 22px 0; padding: 14px 16px; border-radius: 8px;
+            background: var(--panel); border: 1px solid var(--grid); font-size: 16px; }
+  .banner .sym { font: 700 18px var(--mono); }
+  .banner small { display: block; color: var(--text-3); font-size: 13px; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 22px; }
+  .card { background: var(--panel); border: 1px solid var(--grid); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+  .card h2 { margin: 0 0 8px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+  .card .big { font: 700 26px var(--mono); }
+  .card .note { color: var(--text-3); font-size: 13px; }
+  section.card { margin-bottom: 22px; }
+
+  .days { display: grid; grid-template-columns: repeat(auto-fill, minmax(16px, 1fr)); gap: 4px; margin: 6px 0 10px; }
+  .day { aspect-ratio: 1; border-radius: 3px; background: var(--none); }
+  .day.on_time { background: var(--gain); } .day.late { background: var(--late); }
+  .day.missed { background: var(--loss); } .day.pending { background: transparent; border: 1px dashed var(--text-3); }
+  .key { display: flex; flex-wrap: wrap; gap: 4px 16px; color: var(--text-2); font-size: 13px; }
+  .key span { display: inline-flex; align-items: center; gap: 6px; }
+  .key i { display: inline-block; width: 11px; height: 11px; border-radius: 2px; }
+
+  table { width: 100%; border-collapse: collapse; font: 13px var(--mono); }
+  th, td { padding: 7px 8px; text-align: left; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  th { color: var(--text-3); font: 600 12px var(--sans); }
+  td.detail { font-family: var(--sans); color: var(--text-2); white-space: normal; }
+  .scroll { overflow-x: auto; }
+  .st { white-space: nowrap; }
+  footer { margin-top: 24px; color: var(--text-3); font-size: 13px; }
+  .error { margin: 40px 0; padding: 16px; border: 1px solid var(--loss); border-radius: 8px; color: var(--text-2); }
+  @media (max-width: 640px) { .page { padding: 18px 14px 36px; } h1 { font-size: 23px; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>PIPELINE STATUS</h1>
+    <div class="asof" id="generated"></div>
+    <div class="sub">The daily job behind the <a href="./">Magnificent Seven dashboard</a>: whether each trading day's prices went live on time, every run, and every restatement it accepted.</div>
+  </header>
+  <div id="content"></div>
+  <footer>
+    Each trading day's prices count as on time if they are live by midnight UTC that day (7 or 8pm New York).
+    Failures open a <a href="https://github.com/ZakJRademacher/magnificent-seven-dashboard/issues?q=label%3Apipeline-incident">pipeline incident</a> automatically and close it on recovery.
+    · <a href="https://github.com/ZakJRademacher/magnificent-seven-dashboard/blob/main/docs/OPERATIONS.md">Runbook</a>
+  </footer>
+</div>
+<script>
+"use strict";
+const STATES = {
+  on_time: ["✓", "On time"], late: ["!", "Late"], missed: ["✕", "Missed"], pending: ["…", "Pending"],
+};
+const RUN = {
+  published: ["✓", "var(--gain)", "Published"], degraded: ["!", "var(--late)", "Published, behind schedule"],
+  failed: ["✕", "var(--loss)", "Failed, last good data still live"],
+};
+const CHECK = { pass: "✓ pass", warn: "! warn", fail: "✕ fail" };
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const when = iso => iso ? iso.replace(/T(\d\d:\d\d)(?::\d\d)?Z$/, " $1 UTC") : "—";
+
+function render(s) {
+  document.getElementById("generated").textContent = "Updated " + when(s.generated);
+  const latest = s.latest, el = [];
+  if (latest) {
+    const [sym, color, text] = RUN[latest.status];
+    el.push(`<div class="banner" role="status"><span class="sym" style="color:${color}">${sym}</span><div>${text}
+      <small>Last run ${when(latest.finished)} · data as of ${esc(latest.as_of)} · ${latest.rows_added} new day(s)${latest.error ? " · " + esc(latest.error) : ""}</small></div></div>`);
+  }
+  const slo = s.slo, rate = slo.rate == null ? "—" : (100 * slo.rate).toFixed(1) + "%";
+  const counts = s.sessions.reduce((c, d) => (c[d.state] = (c[d.state] || 0) + 1, c), {});
+  el.push(`<div class="cards">
+    <div class="card"><h2>On time</h2><div class="big">${rate}</div><div class="note">${slo.on_time} of the last ${slo.scored} trading days · target ${(100 * slo.target).toFixed(0)}%</div></div>
+    <div class="card"><h2>Late or missed</h2><div class="big">${(counts.late || 0) + (counts.missed || 0)}</div><div class="note">${counts.late || 0} late · ${counts.missed || 0} missed, in the days shown below</div></div>
+    <div class="card"><h2>Runs recorded</h2><div class="big">${s.runs.length}</div><div class="note">most recent 30 shown below</div></div>
+  </div>`);
+  el.push(`<section class="card"><h2>Trading days</h2>
+    <div class="days">${s.sessions.map(d => `<div class="day ${d.state}" title="${d.session}: ${STATES[d.state][1]}${d.live_at ? ", live " + when(d.live_at) : ""}"></div>`).join("")}</div>
+    <div class="key">${Object.entries(STATES).map(([k, [sym, t]]) => `<span><i class="day ${k}"></i>${sym} ${t}</span>`).join("")}</div>
+    ${s.sessions.length ? "" : '<p class="note">No trading days recorded yet.</p>'}
+  </section>`);
+  if (latest) {
+    el.push(`<section class="card"><h2>Latest run's checks</h2><div class="scroll"><table>
+      <tr><th>Check</th><th>Result</th><th>Detail</th></tr>
+      ${latest.checks.map(c => `<tr><td>${esc(c.name)}</td><td class="st">${CHECK[c.status]}</td><td class="detail">${esc(c.detail)}</td></tr>`).join("")}
+    </table></div></section>`);
+  }
+  el.push(`<section class="card"><h2>Recent runs</h2><div class="scroll"><table>
+    <tr><th>Finished</th><th>Result</th><th>Data as of</th><th>New days</th><th>Trigger</th><th>Detail</th></tr>
+    ${s.runs.map(r => `<tr><td class="st">${when(r.finished)}</td><td class="st">${RUN[r.status][0]} ${r.status}</td><td>${esc(r.as_of)}</td>
+      <td>${r.rows_added}</td><td>${esc(r.trigger)}</td><td class="detail">${esc(r.error || "")}</td></tr>`).join("")}
+  </table></div></section>`);
+  el.push(`<section class="card"><h2>Accepted restatements</h2>
+    <p class="note">Adjusted prices change in the past when a dividend or split happens. Each accepted change is logged here; any other change to published history stops the pipeline.</p>
+    ${s.events.length ? `<div class="scroll"><table><tr><th>Logged</th><th>Ticker</th><th>Kind</th><th>Effective</th><th>Factor</th></tr>
+      ${s.events.map(e => `<tr><td class="st">${when(e.logged)}</td><td>${esc(e.ticker)}</td><td>${esc(e.kind)}</td><td>${esc(e.effective)}</td><td>${Number(e.factor).toFixed(6)}</td></tr>`).join("")}
+    </table></div>` : '<p class="note">None yet.</p>'}</section>`);
+  document.getElementById("content").innerHTML = el.join("");
+}
+
+fetch("status.json", { cache: "no-cache" })
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(render)
+  .catch(() => {
+    document.getElementById("content").innerHTML = '<div class="error">Couldn\'t load status.json. It is written by <code>python -m m7.pipeline</code>.</div>';
+  });
+</script>
+</body>
+</html>
