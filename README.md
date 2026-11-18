@@ -1,6 +1,8 @@
 # Magnificent Seven Dashboard
 
-**Live dashboard: https://zakjrademacher.github.io/magnificent-seven-dashboard/**
+[![Pipeline](https://github.com/ZakJRademacher/magnificent-seven-dashboard/actions/workflows/update-dashboard.yml/badge.svg?branch=main)](https://github.com/ZakJRademacher/magnificent-seven-dashboard/actions/workflows/update-dashboard.yml) [![On time](https://img.shields.io/endpoint?url=https%3A%2F%2Fzakjrademacher.github.io%2Fmagnificent-seven-dashboard%2Fbadge-on-time.json)](https://zakjrademacher.github.io/magnificent-seven-dashboard/status.html) [![Data as of](https://img.shields.io/endpoint?url=https%3A%2F%2Fzakjrademacher.github.io%2Fmagnificent-seven-dashboard%2Fbadge-data.json)](https://zakjrademacher.github.io/magnificent-seven-dashboard/status.html)
+
+**Live dashboard: https://zakjrademacher.github.io/magnificent-seven-dashboard/** · [Pipeline status](https://zakjrademacher.github.io/magnificent-seven-dashboard/status.html)
 
 A risk and return dashboard for the seven largest US tech stocks (Apple, Microsoft, Alphabet, Amazon, Nvidia, Meta, Tesla), compared with the S&P 500. The live page refreshes itself every trading day.
 
@@ -43,6 +45,8 @@ The page is rebuilt every weekday by an operated pipeline (`python -m m7.pipelin
 4. If anything blocking fails, the page keeps showing the last good history. Either way the run is appended to a ledger.
 5. A failure **opens a GitHub issue** labelled `pipeline-incident`; the next healthy run closes it with how long it lasted.
 6. The **[status page](https://zakjrademacher.github.io/magnificent-seven-dashboard/status.html)** shows whether each trading day went live on time (target: 95% by midnight UTC), every recent run, and every accepted restatement.
+
+A separate **watchdog** workflow checks the ledger every morning and raises an incident if nothing has been published for two trading days, which catches a schedule that has silently stopped. The badges above show the latest run, the on-time rate and the latest trading day published.
 
 Pull requests and other branches run the pipeline as a dry run against the live source. The [runbook](docs/OPERATIONS.md) covers the objectives, every check, and what to do for each kind of failure.
 

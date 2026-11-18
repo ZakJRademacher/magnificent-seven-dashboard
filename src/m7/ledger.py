@@ -93,3 +93,21 @@ def status_payload(runs, events, now=None):
         "runs": runs[-30:][::-1],
         "events": events[-20:][::-1],
     }
+
+
+def badges(status, now=None):
+    """Shields.io endpoint badges (https://shields.io/badges/endpoint-badge) for the README."""
+    slo = status["slo"]
+    if slo["rate"] is None:
+        on_time = {"message": "no data yet", "color": "lightgrey"}
+    else:
+        color = "brightgreen" if slo["rate"] >= slo["target"] else "yellow" if slo["rate"] >= slo["target"] - 0.1 else "red"
+        on_time = {"message": f"{slo['rate']:.0%} of last {slo['scored']} days", "color": color}
+    latest = status["latest"]
+    if latest and latest.get("as_of"):
+        behind = sessions.sessions_behind(latest["as_of"], now)
+        data = {"message": latest["as_of"], "color": "brightgreen" if behind == 0 else "yellow" if behind == 1 else "red"}
+    else:
+        data = {"message": "none", "color": "lightgrey"}
+    return {"badge-on-time.json": {"schemaVersion": 1, "label": "on time", **on_time},
+            "badge-data.json": {"schemaVersion": 1, "label": "data as of", **data}}
