@@ -69,6 +69,12 @@ class Restatements(unittest.TestCase):
         events, problems = checks.restatements(self.published, self.fetched)
         self.assertEqual((problems, events[0]["kind"]), ([], "correction"))
 
+    def test_rounding_noise_seen_in_production_is_not_a_revision(self):
+        self.fetched.loc["2026-11-13", "SPY"] *= 1 - 1.352744e-05  # SPY 739.96 -> 739.95, observed Nov 18, 2026
+        self.fetched.loc["2026-06-05", "META"] *= 1 + 1.03e-07
+        self.assertEqual(checks.restatements(self.published, self.fetched), ([], []))
+        self.assertAlmostEqual(checks.rounding_noise(self.published, self.fetched), 1.352744e-05, places=9)
+
     def test_irregular_changes_to_history_are_problems(self):
         self.fetched.loc["2025-01-15", "META"] *= 1.03  # one past day edited, nothing before or after
         events, problems = checks.restatements(self.published, self.fetched)
@@ -130,6 +136,15 @@ class PipelineRuns(unittest.TestCase):
         status = json.loads((self.site / "status.json").read_text())
         self.assertEqual(status["latest"]["run_id"], record["run_id"])
         self.assertEqual(len(self.runs()), 1)
+
+    def test_an_incomplete_latest_day_is_left_out_and_explained(self):
+        prices = history()[0]
+        prices.loc[LAST, "NVDA"] = float("nan")
+        record = pipeline.run(self.state, self.site, self.fetch(prices), now=AFTER_CLOSE)
+        self.assertEqual((record["status"], record["as_of"]), ("published", "2026-11-13"))
+        download = next(c for c in record["checks"] if c["name"] == "download")
+        self.assertEqual((download["status"], download["detail"]),
+                         ("warn", "left out incomplete day(s): 2026-11-16 (no price for NVDA)"))
 
     def test_a_failed_download_keeps_the_last_good_data(self):
         record = pipeline.run(self.state, self.site, self.fetch(None, error=ConnectionError("Yahoo down")), now=AFTER_CLOSE)

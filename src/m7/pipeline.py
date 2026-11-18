@@ -71,7 +71,9 @@ def run(state_dir, site_dir, fetch=fetch_live, now=None, trigger="manual", accep
 
     try:
         fetched, fetched_rates = fetch()
-        fetched = fetched.reindex(columns=data.SERIES).loc[START:].dropna()
+        raw = fetched.reindex(columns=data.SERIES).loc[START:]
+        fetched = raw.dropna()
+        incomplete = checks.dropped_days(raw)
         events, problems = checks.restatements(published, fetched)
         if problems and accept_revisions:
             events.append({"ticker": "*", "kind": "accepted_by_operator", "effective": None, "factor": None,
@@ -87,7 +89,12 @@ def run(state_dir, site_dir, fetch=fetch_live, now=None, trigger="manual", accep
         elif events:
             contract.append(checks.Check("restatements", "pass", f"{len(events)} accepted (dividends, splits, corrections)"))
         else:
-            contract.append(checks.Check("restatements", "pass", "published history unchanged"))
+            noise = checks.rounding_noise(published, fetched)
+            contract.append(checks.Check("restatements", "pass", "published history unchanged"
+                                         + (f" (largest rounding difference {noise:.4%})" if noise else "")))
+        if incomplete:
+            contract.append(checks.Check("download", "warn", "left out incomplete day(s): " + "; ".join(incomplete),
+                                         blocks=False))
         if not len(fetched):
             contract.append(checks.Check("download", "fail", "the source returned no complete days"))
         record["checks"] = [c.to_dict() for c in contract]
