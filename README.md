@@ -35,13 +35,18 @@ Then open http://localhost:8000.
 
 ## How the live page updates
 
-1. `.github/workflows/update-dashboard.yml` runs on a schedule (weekdays at 22:17 UTC), on every push to `main`, and on demand from the Actions tab.
-2. It runs `python refresh.py --no-chart`, which downloads daily adjusted closes and the 13-week Treasury bill yield from Yahoo Finance and writes `site/data.json`. If it runs before that day's close has settled (4:30pm New York time), it leaves that day out rather than publish a mid-day price.
-3. It publishes the `site/` folder to GitHub Pages.
+The page is rebuilt every weekday by an operated pipeline (`python -m m7.pipeline`), not just a scheduled script:
 
-If a download fails, the workflow stops and the previous version of the page stays live. If the Treasury bill download alone fails, the prices still publish and the Sharpe ratio falls back to a fixed 4% rate.
+1. `.github/workflows/update-dashboard.yml` runs at 22:17 UTC on weekdays, on every push to `main`, and on demand.
+2. The pipeline downloads the adjusted history from Yahoo Finance and **compares it with what it already published**, kept on the `data` branch. Dividend and split rescalings are accepted and logged; any other change to past prices stops publishing until a person looks.
+3. It checks a **data contract**: every NYSE session present (including holidays and early closes), no implausible moves, and how far behind the latest settled close it is.
+4. If anything blocking fails, the page keeps showing the last good history. Either way the run is appended to a ledger.
+5. A failure **opens a GitHub issue** labelled `pipeline-incident`; the next healthy run closes it with how long it lasted.
+6. The **[status page](https://zakjrademacher.github.io/magnificent-seven-dashboard/status.html)** shows whether each trading day went live on time (target: 95% by midnight UTC), every recent run, and every accepted restatement.
 
-GitHub turns off scheduled workflows in public repos after 60 days without activity. Each scheduled run re-enables its own workflow to reset that clock. As a backstop, the page shows a notice if its data is more than four days old.
+Pull requests and other branches run the pipeline as a dry run against the live source. The [runbook](docs/OPERATIONS.md) covers the objectives, every check, and what to do for each kind of failure.
+
+The page also shows a notice if its latest prices are more than five days old. GitHub turns off scheduled workflows in public repos after 60 days without activity; each scheduled run re-enables its own workflow to reset that clock.
 
 `.github/workflows/tests.yml` rebuilds from the cached data and runs the tests on Python 3.10 and 3.12 for every push and pull request.
 
@@ -50,6 +55,11 @@ GitHub turns off scheduled workflows in public repos after 60 days without activ
 | Path | What it is |
 |---|---|
 | `refresh.py` | Downloads or loads prices, writes `site/data.json`, renders the PNG, prints the metrics |
+| `src/m7/pipeline.py` | The operated daily run: fetch, compare with published history, check, publish, record |
+| `src/m7/checks.py`, `src/m7/sessions.py` | Restatement detection, the data contract, and the NYSE trading calendar |
+| `src/m7/ledger.py`, `src/m7/incident.py` | Pipeline state, the run ledger and on-time measurement; GitHub incident issues |
+| `site/status.html` | The public status page |
+| `docs/OPERATIONS.md` | Objectives, checks and the runbook |
 | `src/m7/data.py` | Downloads, sanity checks, the mid-day guard, and the cache in `data/` |
 | `src/m7/metrics.py` | Returns, growth, drawdowns, CAGR, volatility, Sharpe ratio, correlation, honesty check |
 | `src/m7/chart.py` | The static dashboard image |
@@ -76,4 +86,4 @@ GitHub turns off scheduled workflows in public repos after 60 days without activ
 
 ## Stack
 
-Python, pandas, NumPy, Matplotlib, yfinance, plain HTML/SVG/JavaScript, GitHub Actions, GitHub Pages
+Python, pandas, NumPy, Matplotlib, yfinance, exchange_calendars, plain HTML/SVG/JavaScript, GitHub Actions, GitHub Pages
