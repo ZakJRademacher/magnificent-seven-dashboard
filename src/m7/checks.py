@@ -14,8 +14,11 @@ import pandas as pd
 from . import sessions
 from .data import SERIES
 
-FLAT = 1e-6          # relative differences below this are float noise
-STEP_TOLERANCE = 2e-5  # how constant a rescaling factor must be across earlier days
+# Yahoo recomputes adjusted closes on every download, so the same day can come back slightly
+# different: up to 1.35e-5 relative was seen in production (SPY 739.96 vs 739.95, Nov 16, 2026).
+# Differences up to NOISE are rounding, not revisions. The smallest real dividend adjustment for
+# these stocks (about 6e-5, NVDA's $0.01 on a $180 price) stays well above it.
+NOISE = 2e-5
 CORRECTION_LIMIT = 0.01  # a revision of the latest published close up to 1% is a late correction
 WARN_MOVE, FAIL_MOVE = 0.25, 0.50  # one-day moves for these stocks beyond this are suspicious
 REVERSE_SPLIT_MIN = 1.5  # smallest upward rescaling of earlier prices that a reverse split explains
@@ -37,10 +40,25 @@ def _segments(ratio):
     out, start = [], 0
     values = ratio.to_numpy()
     for i in range(1, len(values) + 1):
-        if i == len(values) or abs(values[i] / values[start] - 1) > STEP_TOLERANCE:
+        if i == len(values) or abs(values[i] / values[start] - 1) > NOISE:
             out.append((start, i - 1, float(np.median(values[start:i]))))
             start = i
     return out
+
+
+def rounding_noise(published, fetched):
+    """The largest relative difference on overlapping days (rounding when below NOISE)."""
+    common = published.index.intersection(fetched.index)
+    if not len(common):
+        return 0.0
+    return float((fetched.loc[common, SERIES] / published.loc[common, SERIES] - 1).abs().max().max())
+
+
+def dropped_days(raw, recent=5):
+    """Recent days the source returned with a price missing, which the pipeline has to leave out."""
+    tail = raw.iloc[-recent:]
+    return [f"{day:%Y-%m-%d} (no price for {', '.join(row.index[row.isna()])})"
+            for day, row in tail.iterrows() if row.isna().any()]
 
 
 def restatements(published, fetched):
@@ -56,19 +74,19 @@ def restatements(published, fetched):
     common = published.index.intersection(fetched.index)
     for ticker in SERIES:
         ratio = fetched.loc[common, ticker] / published.loc[common, ticker]
-        if (ratio.sub(1).abs() <= FLAT).all():
+        if (ratio.sub(1).abs() <= NOISE).all():
             continue
         segments = _segments(ratio)
         last_start, last_end, last_value = segments[-1]
-        if abs(last_value - 1) > FLAT and last_start == last_end and len(segments) >= 2 \
-                and abs(segments[-2][2] - 1) <= FLAT and abs(last_value - 1) <= CORRECTION_LIMIT:
+        if abs(last_value - 1) > NOISE and last_start == last_end and len(segments) >= 2 \
+                and abs(segments[-2][2] - 1) <= NOISE and abs(last_value - 1) <= CORRECTION_LIMIT:
             # Only the newest published day differs, by a little: a late correction to that close.
             events.append({"ticker": ticker, "kind": "correction", "effective": f"{common[-1]:%Y-%m-%d}",
                            "factor": round(last_value, 8)})
             continue
         steps = [(end + 1, value / after) for (_, end, value), (_, _, after) in zip(segments[:-1], segments[1:])]
         dates = list(common)
-        if abs(last_value - 1) > FLAT:
+        if abs(last_value - 1) > NOISE:
             # Every published day was rescaled: the ex-date is the first new day in the download.
             newer = fetched.index[fetched.index > common[-1]]
             if not len(newer) or last_end - last_start < 1:

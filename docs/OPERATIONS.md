@@ -59,6 +59,7 @@ The first production run bootstraps the state from `data/` in the main branch.
 | `moves` | A one-day move above 50% (warns above 25%; META's real −26% on 2022-02-03 is a warning) | yes |
 | `restatements` | Published history changed in a way no dividend or split explains | yes |
 | `download` | The source returned no complete days | yes |
+| `download` (warning) | A recent day came back with a price missing, so it was left out; names the day and ticker. The next run usually fills it | no |
 | `freshness` | More than one settled session behind (warns at one) | no: old prices are still correct, so they stay live and an incident opens |
 | `risk_free` | The T-bill series is missing or implausible (warns; Sharpe falls back to a fixed 4%) | no |
 
@@ -70,6 +71,8 @@ Adjusted closes change in the past: on an ex-dividend date the source multiplies
 - earlier prices scaled **up** by at least 1.5× (reverse split),
 - every published day rescaled because the ex-date is the new day in the download,
 - only the newest published close revised, by at most 1% (late correction).
+
+Differences up to 0.002% are treated as rounding: Yahoo recomputes adjusted closes on every download, and the first production run saw SPY's Nov 16, 2026 close come back as 739.95 instead of 739.96. The largest such difference is shown in the check's detail.
 
 Anything else, such as one past day edited, prices rising slightly in the past, or published days disappearing, blocks the run.
 
