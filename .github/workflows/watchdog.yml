@@ -1,0 +1,48 @@
+name: Pipeline watchdog
+
+# A dead-man's switch for "Update live dashboard": if no run has published data for
+# two or more trading days (for example because GitHub skipped or disabled the
+# schedule), open a pipeline incident and fail, so GitHub's failure email arrives too.
+# Runs every morning, at a different time from the evening pipeline.
+
+on:
+  schedule:
+    - cron: "41 13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install pandas exchange_calendars
+      - name: Read the run ledger from the data branch
+        run: |
+          git fetch --depth=1 origin data
+          git show FETCH_HEAD:runs.jsonl > runs.jsonl
+      - name: Alert if the pipeline has gone quiet
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONPATH: src
+        run: python -m m7.watchdog runs.jsonl
+
+  # Scheduled workflows stop after 60 days without repository activity; keep this one alive too.
+  keepalive:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/watchdog.yml/enable"
+        env:
+          GH_TOKEN: ${{ github.token }}

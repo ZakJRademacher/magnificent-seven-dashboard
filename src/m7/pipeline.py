@@ -123,6 +123,8 @@ def run(state_dir, site_dir, fetch=fetch_live, now=None, trigger="manual", accep
     (site / "data.json").write_text(json.dumps(payload, separators=(",", ":")))
     status = ledger.status_payload(state.read(state.runs), state.read(state.events), now)
     (site / "status.json").write_text(json.dumps(status, separators=(",", ":"), default=str))
+    for name, badge in ledger.badges(status, now).items():
+        (site / name).write_text(json.dumps(badge))
     return record
 
 

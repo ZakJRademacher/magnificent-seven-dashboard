@@ -89,7 +89,7 @@ A failed or stale run opens an issue labelled `pipeline-incident` (or comments o
 | `moves: largest one-day move …` above 50% | Bad print or unadjusted split | Check the ticker's news. A real split will show up as a restatement once Yahoo adjusts. |
 | `freshness` failing with no error | Yahoo hasn't published the close yet, or the schedule didn't fire | Check the Actions tab for the scheduled run. Re-run by hand. |
 | "The pipeline crashed before it could record the run" | A code or dependency failure (for example a yfinance format change) | Read the log, reproduce with `python -m m7.pipeline --state /tmp/state --site /tmp/site`, fix, push. |
-| No runs at all for days | GitHub disabled the scheduled workflow | Re-enable it on the Actions tab. The `keepalive` job and daily commits to `data` should prevent this. |
+| "Watchdog: the published data is N trading days behind" | The schedule stopped, or every recent run failed | Check the Actions tab. If there are no recent runs, re-enable "Update live dashboard" and start a run by hand. The `keepalive` jobs and daily commits to `data` should prevent this. |
 
 ### Rehearsing a failure
 
@@ -101,6 +101,14 @@ PYTHONPATH=src python -m m7.pipeline --state /tmp/state --site /tmp/site \
 ```
 
 `--fixture` reads `prices.csv` (and optionally `risk_free.csv`) instead of calling Yahoo, and `--now` pretends the run happens at that time. `tests/test_pipeline.py` covers outages, revisions, dividends, splits, staleness, operator overrides, timeliness and incident decisions this way.
+
+## The watchdog
+
+A pipeline that fails raises its own incident, but one that stops running can't. GitHub can skip scheduled runs, and disables scheduled workflows after 60 days without repository activity. `.github/workflows/watchdog.yml` runs every morning at 13:41 UTC, reads `runs.jsonl` from the `data` branch, and if the latest published day is **two or more trading days** behind (holidays and weekends don't count), it opens or comments on a `pipeline-incident` issue and fails, so GitHub's failed-workflow email arrives too. The pipeline's next healthy run closes the incident. It runs on GitHub's scheduler as well, so it isn't independent of GitHub itself; a free external uptime monitor watching `status.json` would be.
+
+## Badges
+
+Each run writes `badge-on-time.json` and `badge-data.json` to the site in [Shields.io endpoint](https://shields.io/badges/endpoint-badge) format. The README shows them with the workflow's own status badge: on time turns yellow below the 95% target and red 10 points under it; data as of turns yellow at one trading day behind and red at two.
 
 ## Incident write-ups
 

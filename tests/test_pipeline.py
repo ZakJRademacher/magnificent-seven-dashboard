@@ -10,7 +10,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from m7 import checks, data, incident, ledger, pipeline, sessions  # noqa: E402
+from m7 import checks, data, incident, ledger, pipeline, sessions, watchdog  # noqa: E402
 
 CACHE_PRICES, CACHE_RATES = data.load_cache()
 LAST = pd.Timestamp("2026-11-16")
@@ -240,6 +240,42 @@ class Incidents(unittest.TestCase):
 
     def test_a_crash_without_a_record_opens_an_incident(self):
         self.assertEqual(incident.decide(None, None, self.URL)[0], "open")
+
+
+class Watchdog(unittest.TestCase):
+    def run_record(self, as_of, status="published", finished="2026-11-16T22:19:00Z"):
+        return {"run_id": as_of, "status": status, "as_of": as_of, "finished": finished}
+
+    def test_quiet_after_an_on_time_run(self):
+        self.assertIsNone(watchdog.check([self.run_record("2026-11-16")], now="2026-11-17T13:41Z"))
+
+    def test_one_late_day_is_not_yet_an_alert(self):
+        self.assertIsNone(watchdog.check([self.run_record("2026-11-16")], now="2026-11-18T13:41Z"))
+
+    def test_two_missing_trading_days_alert_even_without_any_failed_run(self):
+        problem = watchdog.check([self.run_record("2026-11-16")], now="2026-11-19T13:41Z")
+        self.assertIn("2 trading days behind", problem)
+
+    def test_weekends_and_holidays_are_not_missing_days(self):
+        self.assertIsNone(watchdog.check([self.run_record("2026-11-25")], now="2026-11-30T13:41Z"))  # Thanksgiving + weekend + early close
+
+    def test_failed_runs_do_not_count_as_publishing(self):
+        runs = [self.run_record("2026-11-12"), self.run_record("2026-11-12", "failed", "2026-11-18T22:19:00Z")]
+        self.assertIn("(failed)", watchdog.check(runs, now="2026-11-19T13:41Z"))
+
+    def test_an_empty_ledger_alerts(self):
+        self.assertIsNotNone(watchdog.check([], now="2026-11-19T13:41Z"))
+
+
+class Badges(unittest.TestCase):
+    def test_badges_follow_the_target_and_freshness(self):
+        runs = [{"run_id": "a", "finished": "2026-11-16T22:30:00Z", "as_of": "2026-11-16", "status": "published"}]
+        status = ledger.status_payload(runs, [], now="2026-11-17T12:00Z")
+        made = ledger.badges(status, now="2026-11-17T12:00Z")
+        self.assertEqual(made["badge-on-time.json"], {"schemaVersion": 1, "label": "on time",
+                                                      "message": "100% of last 1 days", "color": "brightgreen"})
+        self.assertEqual(made["badge-data.json"]["color"], "brightgreen")
+        self.assertEqual(ledger.badges(status, now="2026-11-20T12:00Z")["badge-data.json"]["color"], "red")
 
 
 if __name__ == "__main__":
