@@ -39,6 +39,8 @@ jobs:
       status: ${{ steps.run.outputs.status }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: true   # the run ledger is pushed to the data branch
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
