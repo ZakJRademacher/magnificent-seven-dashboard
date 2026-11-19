@@ -1,5 +1,6 @@
 """Exercise the deployed repository's issue permissions with a fixture run."""
 
+from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
@@ -22,7 +23,7 @@ def run():
     original_decide = incident.decide
 
     def identify_drill(record, open_issue, run_url):
-        action, message = original_decide(record, open_issue, run_url)
+        action, message = original_decide(record, open_issue, run_url, now=datetime.now(timezone.utc))
         if action == 'open':
             message['title'] = f'{title} Fixture failure and recovery verification'
             message['body'] = 'This check uses fixture prices and a simulated failure.\n\n' + message['body']
