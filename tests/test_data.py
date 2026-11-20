@@ -130,3 +130,10 @@ class PublishedSnapshot(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Version(unittest.TestCase):
+    def test_the_page_shows_the_package_version(self):
+        import m7
+        page = (Path(__file__).resolve().parents[1] / "site" / "index.html").read_text(encoding="utf-8")
+        self.assertIn(f'<span id="version">v{m7.__version__}</span>', page)
