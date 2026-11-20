@@ -74,7 +74,7 @@ def run(state_dir, site_dir, fetch=fetch_live, now=None, trigger="manual", accep
         raw = fetched.reindex(columns=data.SERIES).loc[START:]
         fetched = raw.dropna()
         incomplete = checks.dropped_days(raw)
-        events, problems = checks.restatements(published, fetched)
+        events, problems = checks.restatements(published, fetched, raw)
         if problems and accept_revisions:
             events.append({"ticker": "*", "kind": "accepted_by_operator", "effective": None, "factor": None,
                            "reason": accept_revisions, "changes": problems})
