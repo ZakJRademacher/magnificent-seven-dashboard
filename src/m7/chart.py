@@ -8,6 +8,7 @@ and gains and losses always come with an arrow so meaning never rests on color.
 
 import numpy as np
 
+from . import __version__
 from .config import BENCHMARK, COLORS, PORTFOLIO, TICKERS, label
 
 SURFACE = "#0b0e11"
@@ -86,7 +87,7 @@ def render(analysis, path):
 
     # ---- Header
     fig.text(0.04, 0.966, "MAGNIFICENT SEVEN", fontsize=26, fontweight="bold", color=TEXT, va="center")
-    fig.text(0.97, 0.966, f"AS OF {last:%d %b %Y}".upper(), fontsize=11, color=ACCENT,
+    fig.text(0.97, 0.966, f"V{__version__}  ·  AS OF {last:%d %b %Y}".upper(), fontsize=11, color=ACCENT,
              va="center", ha="right", fontfamily=mono)
     rf_note = (f"fixed {a.rf_avg:.0%} risk-free rate" if a.rf_is_fallback
                else f"Sharpe vs 13-week T-bill (avg {a.rf_avg:.1%})")
