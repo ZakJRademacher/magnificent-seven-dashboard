@@ -58,6 +58,23 @@ class Restatements(unittest.TestCase):
         self.assertEqual(problems, [])
         self.assertEqual([(e["kind"], e["effective"]) for e in events], [("split", "2024-06-10"), ("dividend", "2025-03-12")])
 
+    def test_ex_dividend_on_a_new_day_left_out_as_incomplete(self):
+        # Production, Nov 20 2026: MSFT went ex-dividend on the newest day, but that day was left out
+        # because another series had no price yet. The rescaling still has to be recognized.
+        raw = self.fetched.copy()
+        raw.loc[raw.index < LAST, "MSFT"] *= 0.9981
+        raw.loc[LAST, "META"] = float("nan")
+        events, problems = checks.restatements(self.published, raw.dropna(), raw)
+        self.assertEqual(problems, [])
+        self.assertEqual(events, [{"ticker": "MSFT", "kind": "dividend", "effective": "2026-11-16", "factor": 0.9981}])
+
+    def test_rescaling_with_no_newer_day_at_all_is_still_a_problem(self):
+        raw = self.published.copy()
+        raw["MSFT"] *= 0.9981
+        events, problems = checks.restatements(self.published, raw, raw)
+        self.assertEqual(events, [])
+        self.assertIn("MSFT", problems[0])
+
     def test_ex_dividend_on_the_new_day_rescales_all_published_history(self):
         self.fetched.loc[self.fetched.index < LAST, "MSFT"] *= 0.9981
         events, problems = checks.restatements(self.published, self.fetched)
@@ -179,6 +196,18 @@ class PipelineRuns(unittest.TestCase):
         state = ledger.State(self.state)
         self.assertEqual(state.read(state.events)[0]["ticker"], "SPY")
         self.assertAlmostEqual(state.load()[0].loc["2026-11-12", "SPY"], prices.loc["2026-11-12", "SPY"])
+
+    def test_a_dividend_on_an_incomplete_new_day_does_not_block_publishing(self):
+        prices = history("2026-11-13")[0]
+        prices.loc[prices.index < "2026-11-13", "MSFT"] *= 0.9981
+        prices.loc["2026-11-13", "META"] = float("nan")
+        record = pipeline.run(self.state, self.site, self.fetch(prices), now="2026-11-13T22:17:00Z")
+        self.assertIn(record["status"], ("published", "degraded"))
+        self.assertIsNone(record["error"])
+        state = ledger.State(self.state)
+        event = state.read(state.events)[0]
+        self.assertEqual((event["ticker"], event["effective"]), ("MSFT", "2026-11-13"))
+        self.assertAlmostEqual(state.load()[0].loc["2026-11-12", "MSFT"], prices.loc["2026-11-12", "MSFT"])
 
     def test_stale_source_still_publishes_but_is_degraded(self):
         record = pipeline.run(self.state, self.site, self.fetch(history("2026-11-12")[0]), now="2026-11-18T23:00Z")

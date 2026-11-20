@@ -61,12 +61,15 @@ def dropped_days(raw, recent=5):
             for day, row in tail.iterrows() if row.isna().any()]
 
 
-def restatements(published, fetched):
+def restatements(published, fetched, raw=None):
     """Compare overlapping history. Returns (events, problems).
 
     events: accepted changes, each {"ticker", "kind", "effective", "factor"}.
     problems: descriptions of changes that don't fit a corporate-action pattern.
+    raw: the download before incomplete days were left out. A day missing another series' price
+    still shows when this series went ex-dividend, so it can date a rescaling of all published days.
     """
+    raw = fetched if raw is None else raw
     events, problems = [], []
     lost = published.index.difference(fetched.index)
     if len(lost):
@@ -88,7 +91,7 @@ def restatements(published, fetched):
         dates = list(common)
         if abs(last_value - 1) > NOISE:
             # Every published day was rescaled: the ex-date is the first new day in the download.
-            newer = fetched.index[fetched.index > common[-1]]
+            newer = raw.index[(raw.index > common[-1]) & raw[ticker].notna().to_numpy()]
             if not len(newer) or last_end - last_start < 1:
                 problems.append(f"{ticker}: recent prices changed by up to {ratio.sub(1).abs().max():.2%} without a "
                                 "dividend or split pattern")
