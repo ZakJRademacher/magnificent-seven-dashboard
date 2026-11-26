@@ -2,11 +2,11 @@
 
 [![Pipeline](https://github.com/ZakJRademacher/magnificent-seven-dashboard/actions/workflows/update-dashboard.yml/badge.svg?branch=main)](https://github.com/ZakJRademacher/magnificent-seven-dashboard/actions/workflows/update-dashboard.yml) [![On time](https://img.shields.io/endpoint?url=https%3A%2F%2Fzakjrademacher.github.io%2Fmagnificent-seven-dashboard%2Fbadge-on-time.json)](https://zakjrademacher.github.io/magnificent-seven-dashboard/status.html) [![Data as of](https://img.shields.io/endpoint?url=https%3A%2F%2Fzakjrademacher.github.io%2Fmagnificent-seven-dashboard%2Fbadge-data.json)](https://zakjrademacher.github.io/magnificent-seven-dashboard/status.html)
 
-**Live dashboard: https://zakjrademacher.github.io/magnificent-seven-dashboard/** · [Pipeline status](https://zakjrademacher.github.io/magnificent-seven-dashboard/status.html)
+![Magnificent Seven dashboard](magnificent_seven_dashboard.png)
+
+**Live dashboard: <https://zakjrademacher.github.io/magnificent-seven-dashboard/>** · [Pipeline status](https://zakjrademacher.github.io/magnificent-seven-dashboard/status.html)
 
 A risk and return dashboard for the seven largest US tech stocks (Apple, Microsoft, Alphabet, Amazon, Nvidia, Meta, Tesla), compared with the S&P 500. The live page refreshes itself every trading day.
-
-![Magnificent Seven dashboard](magnificent_seven_dashboard.png)
 
 ## What it answers
 
