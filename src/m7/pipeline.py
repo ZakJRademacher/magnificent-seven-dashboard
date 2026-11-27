@@ -144,8 +144,8 @@ def run(state_dir, site_dir, fetch=fetch_live, now=None, trigger="manual", accep
     try:
         if site_note:
             (site / "note.json").write_text(json.dumps(site_note, indent=1), encoding="utf-8")
-        elif note != "off":
-            (site / "note.json").unlink(missing_ok=True)  # never leave a note that failed its re-check
+        else:
+            (site / "note.json").unlink(missing_ok=True)  # no stale note: failed re-check, or the note is off
     except OSError as exc:
         record["checks"].append(checks.Check("note", "warn", f"note file not written: {exc}", blocks=False).to_dict())
     status = ledger.status_payload(state.read(state.runs), state.read(state.events), now)
@@ -187,13 +187,13 @@ def main(argv=None):
     fetch = fixture_fetcher(args.fixture) if args.fixture else fetch_live
     record = run(args.state, args.site, fetch=fetch, now=args.now, trigger=args.trigger,
                  accept_revisions=args.accept_revisions or None, note=args.note)
+    if args.record:  # first, so a problem printing the summary can't lose the run's record
+        args.record.write_text(json.dumps(record, indent=2, default=str))
     text = summary_markdown(record)
     print(text)
     if os.environ.get("GITHUB_STEP_SUMMARY"):
         with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as stream:
             stream.write(text)
-    if args.record:
-        args.record.write_text(json.dumps(record, indent=2, default=str))
     return 0 if record["status"] != "failed" else 1
 
 

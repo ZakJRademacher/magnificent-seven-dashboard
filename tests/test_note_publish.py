@@ -192,10 +192,18 @@ class NoteInThePipeline(unittest.TestCase):
         self.assertIn("surprise", check["detail"])
 
     def test_off_means_no_note_at_all(self):
-        (self.site).mkdir(parents=True, exist_ok=True)
+        self.site.mkdir(parents=True, exist_ok=True)
+        (self.site / "note.json").write_text("{}", encoding="utf-8")  # left from an earlier run
         record = self.run_once(mode="off", client=NoCalls())
         self.assertIsNone(self.note_check(record))
         self.assertIsNone(self.site_note())
+
+
+class Warnings(unittest.TestCase):
+    def test_a_warning_survives_unprintable_characters(self):
+        # Found in review: a lone surrogate in the model's JSON could crash printing the run summary.
+        detail = publish._warn("unknown placeholder {" + chr(0xD800) + "}").detail
+        detail.encode("utf-8")  # must not raise
 
 
 class Recheck(unittest.TestCase):

@@ -34,6 +34,8 @@ DETAIL_MAX = 300
 
 
 def _warn(detail):
+    # The detail can quote the model's answer; make it always printable and storable as UTF-8.
+    detail = detail.encode("utf-8", "backslashreplace").decode("utf-8")
     detail = detail if len(detail) <= DETAIL_MAX else detail[: DETAIL_MAX - 1] + "…"
     return Check("note", "warn", detail, blocks=False)
 
