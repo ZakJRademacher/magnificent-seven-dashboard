@@ -4,6 +4,10 @@ name: Update live dashboard
 # published history and the data contract, record the run on the `data` branch, open or
 # close a pipeline incident, and deploy the site. Pull requests and pushes to other
 # branches are dry runs against the live source: no ledger, no incidents, no deploy.
+#
+# Production and dry runs are separate jobs so that dry runs get read-only permissions and
+# no saved credentials. Only the production job uses the `production` environment, whose
+# secrets (the note's API key) are limited to the main branch in the repository settings.
 
 on:
   schedule:
@@ -26,12 +30,12 @@ concurrency:
   group: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && 'pages' || format('dry-{0}', github.ref) }}
   cancel-in-progress: false
 
-env:
-  PRODUCTION: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
-
 jobs:
   build:
+    # Production: schedule, manual runs and pushes on main.
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    environment: production
     permissions:
       contents: write   # record the run on the data branch
       issues: write     # open and close pipeline incidents
@@ -47,7 +51,6 @@ jobs:
       - run: pip install pandas yfinance exchange_calendars
 
       - name: Check out the pipeline state (data branch)
-        if: env.PRODUCTION == 'true'
         run: |
           if git fetch --depth=1 origin data:data 2>/dev/null; then
             git worktree add state data
@@ -67,7 +70,7 @@ jobs:
           echo "Pipeline status: $status"
 
       - name: Record the run on the data branch
-        if: env.PRODUCTION == 'true' && hashFiles('run.json') != ''
+        if: hashFiles('run.json') != ''
         working-directory: state
         run: |
           git config user.name "github-actions[bot]"
@@ -77,18 +80,45 @@ jobs:
           git push origin HEAD:data
 
       - name: Open or close a pipeline incident
-        if: env.PRODUCTION == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           PYTHONPATH: src
         run: python -m m7.incident run.json
 
-      - if: env.PRODUCTION == 'true' && steps.run.outputs.status != 'crashed'
+      - if: steps.run.outputs.status != 'crashed'
         uses: actions/configure-pages@v6
-      - if: env.PRODUCTION == 'true' && steps.run.outputs.status != 'crashed'
+      - if: steps.run.outputs.status != 'crashed'
         uses: actions/upload-pages-artifact@v5
         with:
           path: site
+
+  dry-run:
+    # Pull requests and pushes to other branches: the same pipeline against the live source,
+    # bootstrapped from data/ in a throwaway state folder. Read-only, nothing recorded or deployed.
+    if: github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      status: ${{ steps.run.outputs.status }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install pandas yfinance exchange_calendars
+
+      - name: Run the pipeline (dry run)
+        id: run
+        env:
+          PYTHONPATH: src
+        run: |
+          python -m m7.pipeline --state state --site site --record run.json || true
+          status=$(python -c "import json, pathlib; p = pathlib.Path('run.json'); print(json.loads(p.read_text())['status'] if p.exists() else 'crashed')")
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "Pipeline status: $status"
 
   deploy:
     # Deploys on failures too: the site is rebuilt from the last good history,
@@ -108,13 +138,16 @@ jobs:
 
   verdict:
     # Mark the workflow red when the pipeline failed, after the status page is deployed.
+    # Exactly one of build and dry-run runs; take the status from whichever did.
     if: always()
-    needs: [build, deploy]
+    needs: [build, dry-run, deploy]
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo "Pipeline status: ${{ needs.build.outputs.status }}"
-          case "${{ needs.build.outputs.status }}" in published|degraded) exit 0 ;; *) exit 1 ;; esac
+      - env:
+          STATUS: ${{ needs.build.outputs.status || needs.dry-run.outputs.status }}
+        run: |
+          echo "Pipeline status: $STATUS"
+          case "$STATUS" in published|degraded) exit 0 ;; *) exit 1 ;; esac
 
   # GitHub turns off scheduled workflows in public repos after 60 days without
   # repository activity. Re-enabling this workflow from inside its own scheduled
