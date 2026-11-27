@@ -123,8 +123,9 @@ class Runner(unittest.TestCase):
         self.assertEqual(result["summary"]["passed"], 4)
         self.assertEqual(model.calls["judge"], 4)
 
-    def test_the_estimate_is_under_a_dollar_for_a_full_run_with_the_judge(self):
-        self.assertLess(run_evals.estimate(30, judge=True), 1.0)
+    def test_the_estimate_matches_the_measured_cost_of_a_full_run(self):
+        # The 2026-11-27 full runs with the judge cost $1.04 and $1.06.
+        self.assertAlmostEqual(run_evals.estimate(30, judge=True), 1.05, delta=0.10)
 
 
 if __name__ == "__main__":
