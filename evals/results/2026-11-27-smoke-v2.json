@@ -1,0 +1,327 @@
+{
+ "label": "smoke-v2",
+ "run_at": "2026-11-27T01:27Z",
+ "settings": {
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "prompt_version": "2",
+  "judge_model": "claude-sonnet-5-5"
+ },
+ "summary": {
+  "cases": 3,
+  "passed": 2,
+  "pass_rate": 0.6666666666666666,
+  "guard_failures": 1,
+  "claims_tagged": 20,
+  "claims_wrong": 0,
+  "release_gate_met": false,
+  "judge": {
+   "notes_scored": 2,
+   "clarity_avg": 3.5,
+   "tone_avg": 4.5,
+   "lowest": 3
+  }
+ },
+ "cost_usd": 0.0784,
+ "rows": [
+  {
+   "case": "2021-11-03",
+   "why": "all seven up",
+   "note": {
+    "headline": "{count.up} as Tesla led the group",
+    "headline_claims": [
+     {
+      "type": "all_up",
+      "ids": [
+       "AAPL",
+       "MSFT",
+       "GOOGL",
+       "AMZN",
+       "NVDA",
+       "META",
+       "TSLA"
+      ]
+     },
+     {
+      "type": "leader",
+      "ids": [
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{TSLA.move_1d}, the best result in the group and its biggest move of the day. {AMZN.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "TSLA"
+        ]
+       },
+       {
+        "type": "biggest_mover",
+        "ids": [
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{MSFT.move_1d}, which lagged the rest of the group. Elsewhere, {AAPL.move_1d}, {META.move_1d}, {GOOGL.move_1d} and {NVDA.move_1d}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "MSFT"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{group.move_1d}, finishing {group.gap_to_spy_1d}. Over the same session, {SPY.move_1d}.",
+      "claims": [
+       {
+        "type": "group_beat_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "2",
+    "effort": "medium",
+    "request_id": "req_011ChSZfMeQrA7LqM5VeTubq",
+    "input_tokens": 2537,
+    "output_tokens": 1050,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2021-11-03",
+    "why": "all seven up",
+    "guard_problems": [],
+    "claims": 6,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2021-11-03",
+     "headline": "All seven rose as Tesla led the group",
+     "bullets": [
+      "Tesla rose 3.6%, the best result in the group and its biggest move of the day. Amazon rose 2.2%.",
+      "Microsoft rose 0.3%, which lagged the rest of the group. Elsewhere, Apple rose 1.0%, Meta rose 1.1%, Alphabet rose 0.8% and Nvidia rose 0.7%.",
+      "The seven stocks rose 1.4% on average, finishing 0.8 percentage points ahead of the S&P 500 fund (SPY). Over the same session, the S&P 500 fund (SPY) rose 0.6%."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states what happened and the sentences are short and plain, but 'the group' is never defined, 'percentage points' and 'S&P 500 fund (SPY)' go unexplained, and the SPY figure is repeated in the last bullet.",
+    "tone": 5,
+    "tone_reason": "The note is calm and descriptive, uses plain verbs like 'rose' and 'lagged', and gives no advice or predictions."
+   }
+  },
+  {
+   "case": "2021-11-05",
+   "why": "group level with SPY",
+   "note": {
+    "headline": "Meta leads a mixed day as Tesla lags",
+    "headline_claims": [
+     {
+      "type": "leader",
+      "ids": [
+       "META"
+      ]
+     },
+     {
+      "type": "laggard",
+      "ids": [
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{META.move_1d}, the best result and the biggest move in the group. {AMZN.move_1d}, while {AAPL.move_1d} and {GOOGL.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "META"
+        ]
+       },
+       {
+        "type": "biggest_mover",
+        "ids": [
+         "META"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{TSLA.move_1d}, the weakest result in the group. {NVDA.move_1d} and {MSFT.move_1d}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "Overall, {count.up}, so most of the group moved higher, and {count.down}. On average, {group.move_1d}, which left the group {group.gap_to_spy_1d}, as {SPY.move_1d}.",
+      "claims": [
+       {
+        "type": "most_up",
+        "ids": [
+         "AAPL",
+         "AMZN",
+         "GOOGL",
+         "META"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "2",
+    "effort": "medium",
+    "request_id": "req_011ChSZgCF9N7hikxuurrEUT",
+    "input_tokens": 2584,
+    "output_tokens": 378,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2021-11-05",
+    "why": "group level with SPY",
+    "guard_problems": [
+     "bullet 3: direction words must come from placeholders, found ['higher']",
+     "bullet 3: 233 characters (max 200)"
+    ],
+    "claims": 6,
+    "claim_errors": [],
+    "passed": false,
+    "shown": null
+   }
+  },
+  {
+   "case": "2021-11-11",
+   "why": "two or more flat stocks",
+   "note": {
+    "headline": "Nvidia leads the group as Tesla lags",
+    "headline_claims": [
+     {
+      "type": "leader",
+      "ids": [
+       "NVDA"
+      ]
+     },
+     {
+      "type": "laggard",
+      "ids": [
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{NVDA.move_1d}, the best result and the biggest move in the group. {MSFT.move_1d}, and these were the only gainers.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "NVDA"
+        ]
+       },
+       {
+        "type": "biggest_mover",
+        "ids": [
+         "NVDA"
+        ]
+       },
+       {
+        "type": "only_up",
+        "ids": [
+         "MSFT",
+         "NVDA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{TSLA.move_1d}, the weakest result in the group, and it is {TSLA.change_5d}. {AMZN.move_1d} and {GOOGL.move_1d}, while {AAPL.move_1d} and {META.move_1d}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "TSLA"
+        ]
+       },
+       {
+        "type": "only_down",
+        "ids": [
+         "AMZN",
+         "GOOGL",
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "On average, {group.move_1d}, which put the group {group.gap_to_spy_1d}. Meanwhile, {SPY.move_1d}.",
+      "claims": [
+       {
+        "type": "group_beat_spy",
+        "ids": []
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "2",
+    "effort": "medium",
+    "request_id": "req_011ChSZgVMHeFJhwqADemexL",
+    "input_tokens": 2774,
+    "output_tokens": 431,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2021-11-11",
+    "why": "two or more flat stocks",
+    "guard_problems": [],
+    "claims": 8,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2021-11-11",
+     "headline": "Nvidia leads the group as Tesla lags",
+     "bullets": [
+      "Nvidia rose 3.2%, the best result and the biggest move in the group. Microsoft rose 0.5%, and these were the only gainers.",
+      "Tesla fell 0.4%, the weakest result in the group, and it is down 13.5% over five trading days. Amazon fell 0.3% and Alphabet fell 0.1%, while Apple was flat and Meta was flat.",
+      "On average, the seven stocks rose 0.4% on average, which put the group 0.4 percentage points ahead of the S&P 500 fund (SPY). Meanwhile, the S&P 500 fund (SPY) was flat."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 3,
+    "clarity_reason": "The headline is clear, but the third bullet repeats itself (\"rose 0.4% on average ... on average\", SPY named twice), and terms like \"percentage points\", \"S&P 500 fund (SPY)\" and \"the group\" are not explained for a non-expert, and \"seven stocks\" is never introduced.",
+    "tone": 4,
+    "tone_reason": "The note is calm and descriptive, with no hype or advice, though phrases like \"lags\" and \"weakest result\" lean slightly evaluative."
+   }
+  }
+ ]
+}

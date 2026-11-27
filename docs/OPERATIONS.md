@@ -45,6 +45,7 @@ The `data` branch holds the pipeline's memory, separate from code history:
 | `prices.csv`, `risk_free.csv` | The history currently published |
 | `runs.jsonl` | One line per run: status, data as of, new days, every check, error |
 | `events.jsonl` | Every accepted dividend, split, correction and operator decision |
+| `note.json` | The last daily note that passed the guard: its day, the hash of the facts it was written from, the model's raw answer and the request details (model, tokens, request id) |
 
 The first production run bootstraps the state from `data/` in the main branch.
 
@@ -62,6 +63,7 @@ The first production run bootstraps the state from `data/` in the main branch.
 | `download` (warning) | A recent day came back with a price missing, so it was left out; names the day and ticker. The next run usually fills it | no |
 | `freshness` | More than one settled session behind (warns at one) | no: old prices are still correct, so they stay live and an incident opens |
 | `risk_free` | The T-bill series is missing or implausible (warns; Sharpe falls back to a fixed 4%) | no |
+| `note` | The daily note wasn't written (API error, missing key, the model stopped early) or the guard rejected it; the detail says which. The previous note stays up if it still passes against today's data | no: a note never holds back prices |
 
 ### Restatements
 
@@ -90,6 +92,29 @@ A failed or stale run opens an issue labelled `pipeline-incident` (or comments o
 | `freshness` failing with no error | Yahoo hasn't published the close yet, or the schedule didn't fire | Check the Actions tab for the scheduled run. Re-run by hand. |
 | "The pipeline crashed before it could record the run" | A code or dependency failure (for example a yfinance format change) | Read the log, reproduce with `python -m m7.pipeline --state /tmp/state --site /tmp/site`, fix, push. |
 | "Watchdog: the published data is N trading days behind" | The schedule stopped, or every recent run failed | Check the Actions tab. If there are no recent runs, re-enable "Update live dashboard" and start a run by hand. The `keepalive` jobs and daily commits to `data` should prevent this. |
+
+### The daily note
+
+The note runs inside the pipeline, after the prices are settled (`src/m7/note/publish.py`):
+
+| Run | What the note step does |
+|---|---|
+| Scheduled or manual run on `main` | Writes a note for the latest day, unless `note.json` already has one for exactly these facts (then nothing is called) |
+| Push to `main` (the merge included) | Republishes the saved note; no API call |
+| Pull request or other branch | Shows the saved example note, labelled "Example"; no API call, no key |
+
+A rerun on the same day costs nothing. If the facts for that day change (a corrected close), the note is written again. Every saved note is rebuilt from the current prices and re-checked by the guard before it is shown, so a restatement can't leave a false claim on the page: if it fails, the card says no note is available.
+
+| `note` warning | Likely cause | What to do |
+|---|---|---|
+| `not written: AuthenticationError`, or "Could not resolve authentication method" | The `ANTHROPIC_KEY` secret is missing, wrong or revoked | Settings → Environments → `production` → update `ANTHROPIC_KEY`. Then run the workflow by hand. |
+| `not written: RateLimitError`, `APIConnectionError`, `APITimeoutError`, `InternalServerError` | The API is busy or down (the client already retried twice) | Nothing usually; run the workflow by hand later for today's note. |
+| `not written: the model stopped with 'max_tokens'` or `'refusal'` | The answer was cut off or refused | Run it once more by hand. If it repeats, look at `note` in `runs.jsonl` and replay that day in the evals. |
+| `rejected by the guard: …` | The model broke a rule (a typed number, an untagged claim, advice) | Nothing for today: the previous note stays up. If it happens more than once in a few weeks, add the day as an eval case and change the prompt (rerun the evals before and after). |
+
+**Turning the note off:** Settings → Secrets and variables → Actions → Variables → set `DAILY_NOTE` to `off`. Runs then make no API call and remove the card's note (the card says no note has been published). Delete the variable to turn it back on. To stop spending immediately without a code change, revoke the key in the Anthropic console; runs then show the `not written` warning and keep the last note.
+
+**Spend:** about three cents a note (about 2,600 input and 950 output tokens on Claude Opus 5.5 at $4 and $20 per million: $0.029), or about $7.40 a year over 252 trading days. The API account has a monthly spend limit as a backstop.
 
 ### Rehearsing a failure
 

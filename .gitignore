@@ -4,3 +4,6 @@ site/data.json
 site/status.json
 state/
 site/badge-*.json
+
+# Written at deploy time by the pipeline (or from the example for previews); never committed
+site/note.json

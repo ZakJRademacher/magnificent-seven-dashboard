@@ -54,6 +54,23 @@ The page also shows a notice if its latest prices are more than five days old. G
 
 `.github/workflows/tests.yml` rebuilds from the cached data and runs the tests on Python 3.10 and 3.12 for every push and pull request.
 
+## Daily note
+
+The card at the top of the page is a three-bullet summary of the latest trading day, written by an AI model (Claude Opus 5.5, through the Anthropic API) from the day's data. Every number in it is checked by code before it is published.
+
+**How it is kept honest:**
+
+1. **Code works out the facts.** `src/m7/note/facts.py` builds a fact sheet for the day: each stock's move, five-day and year-to-date change, the group average, the gap to the S&P 500, and which claims are true (who led, who lagged, how many rose).
+2. **The model never types a number.** It answers in a fixed JSON shape and refers to figures by placeholder, like `{NVDA.move_1d}`. Code replaces each one with the fact's wording ("Nvidia rose 4.2%"), so every figure and every "rose" or "fell" comes from the data.
+3. **A guard decides what is published** (`src/m7/note/guard.py`). It rejects a note if the model's own words contain a number or a direction word, if a claim like "led the group" isn't tagged or isn't true, if it names any other company, if it gives advice or predictions, or if it is too long.
+4. **A failed note never holds back the prices.** It becomes a warning on the status page and the previous note stays up. A saved note is re-checked against the current data each time it is shown again.
+
+**When it runs:** only on the scheduled run and manual runs of `main`, once per trading day. It costs about three cents a day. The API key is a secret of a protected `production` environment that only `main` can use, so branches and pull requests can't read it. Dry runs show a hand-written example note, labelled "Example".
+
+**Evals:** `evals/` holds 30 past trading days chosen to cover the awkward cases (ties, all seven up or down, the first day of a year, flat stocks, holidays), each with answers worked out independently. Every prompt or model change is scored before and after. The release gate is code only: every note passes the guard and every tagged claim is correct. A second model scores clarity and tone, but its scores are only reported, because a model judge can vary between runs. The latest results are in `evals/results/`.
+
+**Limits:** the note only describes what the prices did. It doesn't give reasons (no news), predictions or advice, and nothing is written on days the market is closed.
+
 ## Files
 
 | Path | What it is |
@@ -61,6 +78,8 @@ The page also shows a notice if its latest prices are more than five days old. G
 | `refresh.py` | Downloads or loads prices, writes `site/data.json`, renders the PNG, prints the metrics |
 | `src/m7/pipeline.py` | The operated daily run: fetch, compare with published history, check, publish, record |
 | `src/m7/checks.py`, `src/m7/sessions.py` | Restatement detection, the data contract, and the NYSE trading calendar |
+| `src/m7/note/` | The daily note: fact sheet, writer (API call), placeholder renderer, guard, pipeline step |
+| `evals/` | The note's eval cases, grader and saved results |
 | `src/m7/ledger.py`, `src/m7/incident.py` | Pipeline state, the run ledger and on-time measurement; GitHub incident issues |
 | `site/status.html` | The public status page |
 | `docs/OPERATIONS.md` | Objectives, checks and the runbook |
@@ -90,4 +109,4 @@ The page also shows a notice if its latest prices are more than five days old. G
 
 ## Stack
 
-Python, pandas, NumPy, Matplotlib, yfinance, exchange_calendars, plain HTML/SVG/JavaScript, GitHub Actions, GitHub Pages
+Python, pandas, NumPy, Matplotlib, yfinance, exchange_calendars, the Anthropic API, plain HTML/SVG/JavaScript, GitHub Actions, GitHub Pages

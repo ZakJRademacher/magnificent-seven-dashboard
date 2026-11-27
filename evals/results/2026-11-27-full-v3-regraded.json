@@ -1,0 +1,2716 @@
+{
+ "label": "full-v3-regraded",
+ "run_at": "2026-11-27T01:35Z",
+ "settings": {
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "prompt_version": "3",
+  "judge_model": "claude-sonnet-5-5"
+ },
+ "summary": {
+  "cases": 30,
+  "passed": 28,
+  "pass_rate": 0.9333333333333333,
+  "guard_failures": 2,
+  "claims_tagged": 140,
+  "claims_wrong": 0,
+  "release_gate_met": false,
+  "judge": {
+   "notes_scored": 26,
+   "clarity_avg": 4.12,
+   "tone_avg": 4.65,
+   "lowest": 3
+  }
+ },
+ "cost_usd": 0.0,
+ "rows": [
+  {
+   "case": "2021-11-03",
+   "why": "all seven up",
+   "note": {
+    "headline": "{count.up}, with Tesla leading the group",
+    "headline_claims": [
+     {
+      "type": "all_up",
+      "ids": [
+       "AAPL",
+       "MSFT",
+       "GOOGL",
+       "AMZN",
+       "NVDA",
+       "META",
+       "TSLA"
+      ]
+     },
+     {
+      "type": "leader",
+      "ids": [
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{TSLA.move_1d}, the best result and the biggest move in the group. {AMZN.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "TSLA"
+        ]
+       },
+       {
+        "type": "biggest_mover",
+        "ids": [
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{MSFT.move_1d}, the weakest result in the group, and {count.down}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "MSFT"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "Overall, {group.move_1d}, finishing {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_beat_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSZn8KBZSW3txFW3qGi3",
+    "input_tokens": 2667,
+    "output_tokens": 915,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2021-11-03",
+    "why": "all seven up",
+    "guard_problems": [],
+    "claims": 6,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2021-11-03",
+     "headline": "All seven rose, with Tesla leading the group",
+     "bullets": [
+      "Tesla rose 3.6%, the best result and the biggest move in the group. Amazon rose 2.2%.",
+      "Microsoft rose 0.3%, the weakest result in the group, and none of the seven fell.",
+      "Overall, the seven stocks rose 1.4% on average, finishing 0.8 percentage points ahead of the S&P 500 fund (SPY)."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 5,
+    "clarity_reason": "The headline states what happened, the bullets use short plain sentences with no jargon, and every claim matches the fact sheet.",
+    "tone": 4,
+    "tone_reason": "It is calm and descriptive with no advice or predictions, though 'best result' and 'weakest result' and 'leading' add a mild ranking flavor that is slightly evaluative."
+   }
+  },
+  {
+   "case": "2021-11-05",
+   "why": "group level with SPY",
+   "note": {
+    "headline": "Meta leads a mixed day for the Magnificent Seven",
+    "headline_claims": [
+     {
+      "type": "leader",
+      "ids": [
+       "META"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{META.move_1d}, the best result in the group, while {AMZN.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "META"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{TSLA.move_1d}, the weakest showing in the group. {MSFT.move_1d} and {NVDA.move_1d}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "Overall, {group.move_1d}, {group.gap_to_spy_1d}. {count.up} and {count.down}.",
+      "claims": []
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSZntw3Rr69mfaKBvzwn",
+    "input_tokens": 2714,
+    "output_tokens": 711,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2021-11-05",
+    "why": "group level with SPY",
+    "guard_problems": [],
+    "claims": 3,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2021-11-05",
+     "headline": "Meta leads a mixed day for the Magnificent Seven",
+     "bullets": [
+      "Meta rose 1.6%, the best result in the group, while Amazon rose 1.2%.",
+      "Tesla fell 0.6%, the weakest showing in the group. Microsoft fell 0.1% and Nvidia fell 0.2%.",
+      "Overall, the seven stocks rose 0.4% on average, level with the S&P 500 fund (SPY). 4 of the seven rose and 3 of the seven fell."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline and bullets are short, plain and say what happened, though the group average of 0.4% versus SPY's 0.3% described as 'level' and the omission of Apple and Alphabet in the bullets may leave a reader slightly unsure.",
+    "tone": 5,
+    "tone_reason": "The note is calm and purely descriptive, with no hype, drama, advice or predictions."
+   }
+  },
+  {
+   "case": "2021-11-11",
+   "why": "two or more flat stocks",
+   "note": {
+    "headline": "Nvidia leads the Magnificent Seven on a mixed day",
+    "headline_claims": [
+     {
+      "type": "leader",
+      "ids": [
+       "NVDA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{NVDA.move_1d}, the best result in the group and the biggest move of the day.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "NVDA"
+        ]
+       },
+       {
+        "type": "biggest_mover",
+        "ids": [
+         "NVDA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{group.move_1d}, {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_beat_spy",
+        "ids": []
+       }
+      ]
+     },
+     {
+      "text": "{TSLA.move_1d}, the weakest result in the group. The stock is {TSLA.change_5d}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "TSLA"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSZoXZgn8LR6zdMGjw5o",
+    "input_tokens": 2904,
+    "output_tokens": 864,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2021-11-11",
+    "why": "two or more flat stocks",
+    "guard_problems": [
+     "bullet 3: ['{TSLA.change_5d}'] must follow the same company's name in the sentence"
+    ],
+    "claims": 5,
+    "claim_errors": [],
+    "passed": false,
+    "shown": null
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline and bullets use plain words and short sentences, and the numbers are easy to follow, though 'mixed day' is vague and 'weakest result' with a five-day figure tacked on is slightly abrupt.",
+    "tone": 4,
+    "tone_reason": "The note is neutral and descriptive with no advice or predictions, though 'leads' and 'best/weakest result' lend a mild competitive framing."
+   }
+  },
+  {
+   "case": "2021-11-23",
+   "why": "tie for best or worst",
+   "note": {
+    "headline": "{TSLA.move_1d}, the worst result in the group",
+    "headline_claims": [
+     {
+      "type": "laggard",
+      "ids": [
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{group.move_1d}, {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{AAPL.move_1d} and {AMZN.move_1d}, sharing the best result in the group. They were the only stocks in the group to do so.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "AAPL",
+         "AMZN"
+        ]
+       },
+       {
+        "type": "only_up",
+        "ids": [
+         "AAPL",
+         "AMZN"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{count.down}. Among them, {META.move_1d} and {MSFT.move_1d}.",
+      "claims": []
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSZpEKt7GXwpGHGnBbbd",
+    "input_tokens": 2945,
+    "output_tokens": 1047,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2021-11-23",
+    "why": "tie for best or worst",
+    "guard_problems": [],
+    "claims": 4,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2021-11-23",
+     "headline": "Tesla fell 4.1%, the worst result in the group",
+     "bullets": [
+      "The seven stocks fell 0.9% on average, 1.1 percentage points behind the S&P 500 fund (SPY).",
+      "Apple rose 0.2% and Amazon rose 0.2%, sharing the best result in the group. They were the only stocks in the group to do so.",
+      "5 of the seven fell. Among them, Meta fell 1.1% and Microsoft fell 0.6%."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states what happened and the bullets use short, plain sentences, though 'the best result in the group' and the slightly awkward 'They were the only stocks in the group to do so' take a moment to parse.",
+    "tone": 5,
+    "tone_reason": "The note is calm and purely descriptive, with no hype, drama, advice or predictions."
+   }
+  },
+  {
+   "case": "2021-11-26",
+   "why": "all seven down",
+   "note": {
+    "headline": "Magnificent Seven: {count.down}",
+    "headline_claims": [
+     {
+      "type": "all_down",
+      "ids": [
+       "AAPL",
+       "MSFT",
+       "GOOGL",
+       "AMZN",
+       "NVDA",
+       "META",
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{group.move_1d}, {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": [
+         "SPY"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{NVDA.move_1d}, the worst result in the group and its biggest move of the day.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "NVDA"
+        ]
+       },
+       {
+        "type": "biggest_mover",
+        "ids": [
+         "NVDA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{AMZN.move_1d}, the best showing in the group, leaving it {AMZN.change_5d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "AMZN"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSZq8rFzf7FLHaApEwFP",
+    "input_tokens": 2866,
+    "output_tokens": 884,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2021-11-26",
+    "why": "all seven down",
+    "guard_problems": [],
+    "claims": 5,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2021-11-26",
+     "headline": "Magnificent Seven: all seven fell",
+     "bullets": [
+      "The seven stocks fell 2.8% on average, 0.5 percentage points behind the S&P 500 fund (SPY).",
+      "Nvidia fell 3.6%, the worst result in the group and its biggest move of the day.",
+      "Amazon fell 2.1%, the best showing in the group, leaving it down 5.2% over five trading days."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 3,
+    "clarity_reason": "The headline and first bullet are plain and clear, but \"its biggest move of the day\" for Nvidia is redundant and confusing since it just repeats the worst result, and the Amazon bullet mixes a one-day drop with a five-day figure without making the switch clear.",
+    "tone": 4,
+    "tone_reason": "The note is neutral and descriptive with no advice or predictions, though \"worst result\" and \"best showing\" are mildly evaluative wording for a day when every stock fell."
+   }
+  },
+  {
+   "case": "2021-12-01",
+   "why": "tie for best or worst",
+   "note": {
+    "headline": "Magnificent Seven: {count.down}, trailing the broader market",
+    "headline_claims": [
+     {
+      "type": "all_down",
+      "ids": [
+       "AAPL",
+       "MSFT",
+       "GOOGL",
+       "AMZN",
+       "NVDA",
+       "META",
+       "TSLA"
+      ]
+     },
+     {
+      "type": "group_trailed_spy",
+      "ids": [
+       "AAPL",
+       "MSFT",
+       "GOOGL",
+       "AMZN",
+       "NVDA",
+       "META",
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{group.move_1d}, {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{META.move_1d} and {TSLA.move_1d}, tying for the worst result in the group.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{MSFT.move_1d}, the best result in the group, while {AAPL.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "MSFT"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSZqvozCqiwCBgNKXVmK",
+    "input_tokens": 2880,
+    "output_tokens": 929,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2021-12-01",
+    "why": "tie for best or worst",
+    "guard_problems": [],
+    "claims": 5,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2021-12-01",
+     "headline": "Magnificent Seven: all seven fell, trailing the broader market",
+     "bullets": [
+      "The seven stocks fell 2.2% on average, 1.1 percentage points behind the S&P 500 fund (SPY).",
+      "Meta fell 4.3% and Tesla fell 4.3%, tying for the worst result in the group.",
+      "Microsoft fell 0.2%, the best result in the group, while Apple fell 0.3%."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 5,
+    "clarity_reason": "The headline states plainly what happened, the three bullets use short plain sentences with concrete figures, and the only mildly technical phrase, 'percentage points behind', is already explained on the dashboard.",
+    "tone": 5,
+    "tone_reason": "The note is calm and purely descriptive, reporting falls and rankings with no hype, drama, advice or predictions."
+   }
+  },
+  {
+   "case": "2021-12-08",
+   "why": "two or more flat stocks",
+   "note": {
+    "headline": "Meta leads as the Magnificent Seven beat the S&P 500",
+    "headline_claims": [
+     {
+      "type": "leader",
+      "ids": [
+       "META"
+      ]
+     },
+     {
+      "type": "group_beat_spy",
+      "ids": []
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{META.move_1d}, the best result in the group, while {AAPL.move_1d} and {TSLA.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "META"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{NVDA.move_1d}, the worst result in the group. {MSFT.move_1d} and {AMZN.move_1d}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "NVDA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "Overall, {group.move_1d}, {group.gap_to_spy_1d}. {count.up}.",
+      "claims": [
+       {
+        "type": "group_beat_spy",
+        "ids": []
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSZryVzhKAS6G2oGT7Tw",
+    "input_tokens": 2905,
+    "output_tokens": 990,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2021-12-08",
+    "why": "two or more flat stocks",
+    "guard_problems": [],
+    "claims": 5,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2021-12-08",
+     "headline": "Meta leads as the Magnificent Seven beat the S&P 500",
+     "bullets": [
+      "Meta rose 2.4%, the best result in the group, while Apple rose 2.3% and Tesla rose 1.6%.",
+      "Nvidia fell 1.9%, the worst result in the group. Microsoft was flat and Amazon was flat.",
+      "Overall, the seven stocks rose 0.7% on average, 0.5 percentage points ahead of the S&P 500 fund (SPY). 4 of the seven rose."
+     ]
+    }
+   }
+  },
+  {
+   "case": "2021-12-10",
+   "why": "tie for best or worst",
+   "note": {
+    "headline": "Apple and Microsoft lead while the group trails the S&P 500",
+    "headline_claims": [
+     {
+      "type": "leader",
+      "ids": [
+       "AAPL",
+       "MSFT"
+      ]
+     },
+     {
+      "type": "group_trailed_spy",
+      "ids": []
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{AAPL.move_1d} and {MSFT.move_1d}, tied for the best result in the group.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "AAPL",
+         "MSFT"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{AMZN.move_1d}, the weakest result in the group. Elsewhere, {NVDA.move_1d} and {META.move_1d}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "AMZN"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{group.move_1d}, {group.gap_to_spy_1d}. {count.up}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": []
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSZsi2LnS9mSx34tHwr2",
+    "input_tokens": 2940,
+    "output_tokens": 863,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2021-12-10",
+    "why": "tie for best or worst",
+    "guard_problems": [],
+    "claims": 5,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2021-12-10",
+     "headline": "Apple and Microsoft lead while the group trails the S&P 500",
+     "bullets": [
+      "Apple rose 2.8% and Microsoft rose 2.8%, tied for the best result in the group.",
+      "Amazon fell 1.1%, the weakest result in the group. Elsewhere, Nvidia fell 1.0% and Meta was flat.",
+      "The seven stocks rose 0.7% on average, 0.2 percentage points behind the S&P 500 fund (SPY). 4 of the seven rose."
+     ]
+    }
+   }
+  },
+  {
+   "case": "2021-12-27",
+   "why": "first day after a market holiday",
+   "note": {
+    "headline": "Nvidia leads as the Magnificent Seven beat the S&P 500",
+    "headline_claims": [
+     {
+      "type": "leader",
+      "ids": [
+       "NVDA"
+      ]
+     },
+     {
+      "type": "group_beat_spy",
+      "ids": []
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{group.move_1d}, leaving the group {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_beat_spy",
+        "ids": []
+       }
+      ]
+     },
+     {
+      "text": "{NVDA.move_1d}, the best result in the group. {META.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "NVDA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{AMZN.move_1d}, the weakest result and the only stock in the group to move that way, while {count.up}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "AMZN"
+        ]
+       },
+       {
+        "type": "only_down",
+        "ids": [
+         "AMZN"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSZtJMaxS9mVzpPYY67m",
+    "input_tokens": 2935,
+    "output_tokens": 954,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2021-12-27",
+    "why": "first day after a market holiday",
+    "guard_problems": [],
+    "claims": 6,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2021-12-27",
+     "headline": "Nvidia leads as the Magnificent Seven beat the S&P 500",
+     "bullets": [
+      "The seven stocks rose 2.1% on average, leaving the group 0.7 percentage points ahead of the S&P 500 fund (SPY).",
+      "Nvidia rose 4.4%, the best result in the group. Meta rose 3.3%.",
+      "Amazon fell 0.8%, the weakest result and the only stock in the group to move that way, while 6 of the seven rose."
+     ]
+    }
+   }
+  },
+  {
+   "case": "2022-01-03",
+   "why": "first trading day of a year",
+   "note": {
+    "headline": "{TSLA.move_1d}, leading the Magnificent Seven",
+    "headline_claims": [
+     {
+      "type": "leader",
+      "ids": [
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{group.move_1d}, {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_beat_spy",
+        "ids": []
+       }
+      ]
+     },
+     {
+      "text": "{count.up}. {AAPL.move_1d} and {NVDA.move_1d}.",
+      "claims": []
+     },
+     {
+      "text": "{MSFT.move_1d}, the only stock in the group to do so and the weakest result of the day.",
+      "claims": [
+       {
+        "type": "only_down",
+        "ids": [
+         "MSFT"
+        ]
+       },
+       {
+        "type": "laggard",
+        "ids": [
+         "MSFT"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSZtzdWJnw12sHJ3B4F6",
+    "input_tokens": 3156,
+    "output_tokens": 735,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2022-01-03",
+    "why": "first trading day of a year",
+    "guard_problems": [],
+    "claims": 4,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2022-01-03",
+     "headline": "Tesla rose 13.5%, leading the Magnificent Seven",
+     "bullets": [
+      "The seven stocks rose 3.0% on average, 2.4 percentage points ahead of the S&P 500 fund (SPY).",
+      "6 of the seven rose. Apple rose 2.5% and Nvidia rose 2.4%.",
+      "Microsoft fell 0.5%, the only stock in the group to do so and the weakest result of the day."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 5,
+    "clarity_reason": "The headline states the main event, the bullets are short and use plain words, and the figures are easy to follow without any finance background.",
+    "tone": 5,
+    "tone_reason": "It sticks to neutral description of what happened, using plain verbs like rose and fell, with no hype, drama, advice or predictions."
+   }
+  },
+  {
+   "case": "2022-01-06",
+   "why": "group level with SPY",
+   "note": {
+    "headline": "Meta leads the Magnificent Seven as Tesla lags",
+    "headline_claims": [
+     {
+      "type": "leader",
+      "ids": [
+       "META"
+      ]
+     },
+     {
+      "type": "laggard",
+      "ids": [
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{META.move_1d}, the best result and biggest move in the group, while {NVDA.move_1d}. {count.up}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "META"
+        ]
+       },
+       {
+        "type": "biggest_mover",
+        "ids": [
+         "META"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{TSLA.move_1d}, the worst result in the group. {count.down}, including Apple, Microsoft and Amazon, while {GOOGL.move_1d}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "For the day, {group.move_1d}, {group.gap_to_spy_1d}.",
+      "claims": []
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSZutHnrfnGHapytsW3x",
+    "input_tokens": 3129,
+    "output_tokens": 983,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2022-01-06",
+    "why": "group level with SPY",
+    "guard_problems": [],
+    "claims": 5,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2022-01-06",
+     "headline": "Meta leads the Magnificent Seven as Tesla lags",
+     "bullets": [
+      "Meta rose 2.6%, the best result and biggest move in the group, while Nvidia rose 2.1%. 2 of the seven rose.",
+      "Tesla fell 2.2%, the worst result in the group. 4 of the seven fell, including Apple, Microsoft and Amazon, while Alphabet was flat.",
+      "For the day, the seven stocks fell 0.1% on average, level with the S&P 500 fund (SPY)."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline says what happened and the bullets use short, plain sentences, though 'biggest move in the group' and 'lags' are slightly vague and the first bullet packs in a few facts.",
+    "tone": 4,
+    "tone_reason": "The note is neutral and descriptive with no advice or predictions, though 'leads' and 'lags' in the headline add a mild competitive framing."
+   }
+  },
+  {
+   "case": "2022-01-18",
+   "why": "first day after a market holiday",
+   "note": {
+    "headline": "{count.down}, with Meta faring worst",
+    "headline_claims": [
+     {
+      "type": "all_down",
+      "ids": [
+       "AAPL",
+       "MSFT",
+       "GOOGL",
+       "AMZN",
+       "NVDA",
+       "META",
+       "TSLA"
+      ]
+     },
+     {
+      "type": "laggard",
+      "ids": [
+       "META"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{META.move_1d}, the weakest result in the group. {TSLA.move_1d}, the best showing among the Magnificent Seven.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "META"
+        ]
+       },
+       {
+        "type": "leader",
+        "ids": [
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "Overall, {group.move_1d}, leaving the group {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{NVDA.move_1d} and is {NVDA.change_ytd}. Microsoft is {MSFT.change_ytd}.",
+      "claims": []
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSZvjh9DfCjoC91yMcv5",
+    "input_tokens": 3085,
+    "output_tokens": 928,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2022-01-18",
+    "why": "first day after a market holiday",
+    "guard_problems": [],
+    "claims": 5,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2022-01-18",
+     "headline": "All seven fell, with Meta faring worst",
+     "bullets": [
+      "Meta fell 4.1%, the weakest result in the group. Tesla fell 1.8%, the best showing among the Magnificent Seven.",
+      "Overall, the seven stocks fell 2.7% on average, leaving the group 0.9 percentage points behind the S&P 500 fund (SPY).",
+      "Nvidia fell 3.9% and is down 11.9% so far in 2022. Microsoft is down 10.0% so far in 2022."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states plainly what happened and the sentences are short and jargon-free, though the third bullet jumps to year-to-date figures for just two stocks without explaining why those two, and 'faring' and 'showing' are slightly less plain than needed.",
+    "tone": 5,
+    "tone_reason": "The note is calm, neutral and purely descriptive, with no hype, drama, advice or predictions."
+   }
+  },
+  {
+   "case": "2022-02-03",
+   "why": "very large single-stock move",
+   "note": {
+    "headline": "{META.move_1d} as {count.down}",
+    "headline_claims": [
+     {
+      "type": "all_down",
+      "ids": [
+       "AAPL",
+       "MSFT",
+       "GOOGL",
+       "AMZN",
+       "NVDA",
+       "META",
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{META.move_1d}, the worst result and the biggest move in the group. {AMZN.move_1d}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "META"
+        ]
+       },
+       {
+        "type": "biggest_mover",
+        "ids": [
+         "META"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{TSLA.move_1d}, the best result in the group, while {AAPL.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "Overall, {group.move_1d}, {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSZwd9WtAH1fCdJA993S",
+    "input_tokens": 3083,
+    "output_tokens": 855,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2022-02-03",
+    "why": "very large single-stock move",
+    "guard_problems": [],
+    "claims": 5,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2022-02-03",
+     "headline": "Meta fell 26.4% as all seven fell",
+     "bullets": [
+      "Meta fell 26.4%, the worst result and the biggest move in the group. Amazon fell 7.8%.",
+      "Tesla fell 1.6%, the best result in the group, while Apple fell 1.7%.",
+      "Overall, the seven stocks fell 7.1% on average, 4.8 percentage points behind the S&P 500 fund (SPY)."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states what happened and the sentences are short and plain, though the bullets jump between stocks without a clear order and 'worst result' and 'best result' are slightly vague about the time frame (one day).",
+    "tone": 5,
+    "tone_reason": "The note is calm, factual and descriptive, with no hype, drama, advice or predictions."
+   }
+  },
+  {
+   "case": "2022-02-22",
+   "why": "first day after a market holiday",
+   "note": {
+    "headline": "Tesla has the group's worst day as {count.down}",
+    "headline_claims": [
+     {
+      "type": "laggard",
+      "ids": [
+       "TSLA"
+      ]
+     },
+     {
+      "type": "all_down",
+      "ids": [
+       "AAPL",
+       "MSFT",
+       "GOOGL",
+       "AMZN",
+       "NVDA",
+       "META",
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{group.move_1d}, leaving the group {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{TSLA.move_1d}, the biggest move and the worst result in the group. {META.move_1d}.",
+      "claims": [
+       {
+        "type": "biggest_mover",
+        "ids": [
+         "TSLA"
+        ]
+       },
+       {
+        "type": "laggard",
+        "ids": [
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{MSFT.move_1d}, the best result in the group. For comparison, {SPY.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "MSFT"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSZxTCGSAbDUMew9ufRC",
+    "input_tokens": 3091,
+    "output_tokens": 804,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2022-02-22",
+    "why": "first day after a market holiday",
+    "guard_problems": [],
+    "claims": 6,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2022-02-22",
+     "headline": "Tesla has the group's worst day as all seven fell",
+     "bullets": [
+      "The seven stocks fell 1.6% on average, leaving the group 0.5 percentage points behind the S&P 500 fund (SPY).",
+      "Tesla fell 4.1%, the biggest move and the worst result in the group. Meta fell 2.0%.",
+      "Microsoft fell 0.1%, the best result in the group. For comparison, the S&P 500 fund (SPY) fell 1.1%."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 5,
+    "clarity_reason": "The headline states what happened, the bullets are short and use plain words, and the numbers are easy to follow with the SPY comparison given in context.",
+    "tone": 4,
+    "tone_reason": "It is calm and descriptive with no advice or predictions, though 'worst day' and 'worst result' lean slightly dramatic and 'worst day' could be read as a claim about Tesla's history rather than just the group on this day."
+   }
+  },
+  {
+   "case": "2022-05-24",
+   "why": "all seven down",
+   "note": {
+    "headline": "{count.down}; {META.move_1d}, the worst in the group",
+    "headline_claims": [
+     {
+      "type": "all_down",
+      "ids": [
+       "AAPL",
+       "MSFT",
+       "GOOGL",
+       "AMZN",
+       "NVDA",
+       "META",
+       "TSLA"
+      ]
+     },
+     {
+      "type": "laggard",
+      "ids": [
+       "META"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "Across the Magnificent Seven, {group.move_1d}, {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{MSFT.move_1d}, the best result in the group, while {SPY.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "MSFT"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{TSLA.move_1d} and is {TSLA.change_5d}. Elsewhere, {GOOGL.move_1d}.",
+      "claims": []
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSZy9EJ4WxJGFYqyRyTU",
+    "input_tokens": 3085,
+    "output_tokens": 889,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2022-05-24",
+    "why": "all seven down",
+    "guard_problems": [],
+    "claims": 4,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2022-05-24",
+     "headline": "All seven fell; Meta fell 7.6%, the worst in the group",
+     "bullets": [
+      "Across the Magnificent Seven, the seven stocks fell 4.2% on average, 3.4 percentage points behind the S&P 500 fund (SPY).",
+      "Microsoft fell 0.4%, the best result in the group, while the S&P 500 fund (SPY) fell 0.8%.",
+      "Tesla fell 6.9% and is down 17.5% over five trading days. Elsewhere, Alphabet fell 4.9%."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states plainly what happened and the bullets use simple words and short sentences, though the first bullet is slightly repetitive ('Across the Magnificent Seven, the seven stocks') and the last bullet's 'Elsewhere, Alphabet fell 4.9%' is a loose, unexplained add-on.",
+    "tone": 5,
+    "tone_reason": "The note sticks to calm, neutral description of the declines with no hype, dramatic language, advice or predictions."
+   }
+  },
+  {
+   "case": "2022-07-22",
+   "why": "ordinary day",
+   "note": {
+    "headline": "{META.move_1d}, the worst result in the group",
+    "headline_claims": [
+     {
+      "type": "laggard",
+      "ids": [
+       "META"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{TSLA.move_1d}, the only stock in the group to do so and the best result of the day.",
+      "claims": [
+       {
+        "type": "only_up",
+        "ids": [
+         "TSLA"
+        ]
+       },
+       {
+        "type": "leader",
+        "ids": [
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{count.down}, and {group.move_1d}. That left the group {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "most_down",
+        "ids": [
+         "AAPL",
+         "AMZN",
+         "GOOGL",
+         "META",
+         "MSFT",
+         "NVDA"
+        ]
+       },
+       {
+        "type": "group_trailed_spy",
+        "ids": []
+       }
+      ]
+     },
+     {
+      "text": "{GOOGL.move_1d} and {NVDA.move_1d}. For comparison, {SPY.move_1d}.",
+      "claims": []
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSZz8VB6qsjUpcvSyNrk",
+    "input_tokens": 3148,
+    "output_tokens": 880,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2022-07-22",
+    "why": "ordinary day",
+    "guard_problems": [],
+    "claims": 5,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2022-07-22",
+     "headline": "Meta fell 7.6%, the worst result in the group",
+     "bullets": [
+      "Tesla rose 0.2%, the only stock in the group to do so and the best result of the day.",
+      "6 of the seven fell, and the seven stocks fell 3.0% on average. That left the group 2.1 percentage points behind the S&P 500 fund (SPY).",
+      "Alphabet fell 5.6% and Nvidia fell 4.0%. For comparison, the S&P 500 fund (SPY) fell 0.9%."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states what happened, and the sentences are short and use plain words with no jargon; the only slight snags are the mix of 'the group' and 'the seven stocks' and the 'Tesla rose... best result' phrasing, which is clear enough but a bit repetitive.",
+    "tone": 5,
+    "tone_reason": "The note is calm and purely descriptive, reporting moves and comparisons with no hype, drama, advice or predictions."
+   }
+  },
+  {
+   "case": "2022-08-03",
+   "why": "all seven up",
+   "note": {
+    "headline": "Meta led as {count.up}",
+    "headline_claims": [
+     {
+      "type": "leader",
+      "ids": [
+       "META"
+      ]
+     },
+     {
+      "type": "all_up",
+      "ids": [
+       "AAPL",
+       "MSFT",
+       "GOOGL",
+       "AMZN",
+       "NVDA",
+       "META",
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{META.move_1d}, the best result in the group, while {NVDA.move_1d}, the weakest showing of the day.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "META"
+        ]
+       },
+       {
+        "type": "laggard",
+        "ids": [
+         "NVDA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{group.move_1d}, which put the group {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_beat_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{AMZN.move_1d} and is {AMZN.change_5d}. {AAPL.move_1d} to close at {AAPL.close}.",
+      "claims": []
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSa1De2H8aZgYxYA5Qh4",
+    "input_tokens": 3087,
+    "output_tokens": 777,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2022-08-03",
+    "why": "all seven up",
+    "guard_problems": [],
+    "claims": 5,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2022-08-03",
+     "headline": "Meta led as all seven rose",
+     "bullets": [
+      "Meta rose 5.4%, the best result in the group, while Nvidia rose 2.0%, the weakest showing of the day.",
+      "The seven stocks rose 3.3% on average, which put the group 1.7 percentage points ahead of the S&P 500 fund (SPY).",
+      "Amazon rose 4.0% and is up 15.3% over five trading days. Apple rose 3.8% to close at $162.60."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states what happened and the first two bullets are short and plain, though the third bullet mixes two unrelated facts (Amazon's five-day gain and Apple's close) and \"five trading days\" appears with no comparison for context.",
+    "tone": 5,
+    "tone_reason": "The note is calm, neutral and purely descriptive, with no hype, drama, advice or predictions."
+   }
+  },
+  {
+   "case": "2022-10-27",
+   "why": "very large single-stock move",
+   "note": {
+    "headline": "{META.move_1d}, the biggest move in the group",
+    "headline_claims": [
+     {
+      "type": "biggest_mover",
+      "ids": [
+       "META"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "Overall, {group.move_1d}, {group.gap_to_spy_1d}. Across the group, {count.down}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{NVDA.move_1d}, the best result in the group, and {TSLA.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "NVDA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "Meta had the worst day in the group, and its shares are now {META.change_ytd}. Meanwhile, {AMZN.move_1d}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "META"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSa1zQZxN9hNVZgZGKfF",
+    "input_tokens": 3150,
+    "output_tokens": 1072,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2022-10-27",
+    "why": "very large single-stock move",
+    "guard_problems": [],
+    "claims": 4,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2022-10-27",
+     "headline": "Meta fell 24.6%, the biggest move in the group",
+     "bullets": [
+      "Overall, the seven stocks fell 4.9% on average, 4.3 percentage points behind the S&P 500 fund (SPY). Across the group, 5 of the seven fell.",
+      "Nvidia rose 2.2%, the best result in the group, and Tesla rose 0.2%.",
+      "Meta had the worst day in the group, and its shares are now down 70.9% so far in 2022. Meanwhile, Amazon fell 4.1%."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states what happened and the sentences are short and plain, though the bullets are a bit scattered (Nvidia and Tesla, then Meta's year-to-date figure, then Amazon) and \"5 of the seven\" mixes numeral and word.",
+    "tone": 5,
+    "tone_reason": "The note is calm and purely descriptive, with no hype, drama, advice or predictions."
+   }
+  },
+  {
+   "case": "2023-01-03",
+   "why": "first trading day of a year",
+   "note": {
+    "headline": "{TSLA.move_1d}, the worst result in the group",
+    "headline_claims": [
+     {
+      "type": "laggard",
+      "ids": [
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{group.move_1d}, leaving the group {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": []
+       }
+      ]
+     },
+     {
+      "text": "{META.move_1d}, the best result in the group. Elsewhere, {AMZN.move_1d} and {GOOGL.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "META"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{count.down}. That included Apple and Nvidia, as {AAPL.move_1d} and {NVDA.move_1d}.",
+      "claims": []
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSa2uccVpUb5nnqox3sh",
+    "input_tokens": 3155,
+    "output_tokens": 726,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2023-01-03",
+    "why": "first trading day of a year",
+    "guard_problems": [],
+    "claims": 3,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2023-01-03",
+     "headline": "Tesla fell 12.2%, the worst result in the group",
+     "bullets": [
+      "The seven stocks fell 1.6% on average, leaving the group 1.2 percentage points behind the S&P 500 fund (SPY).",
+      "Meta rose 3.7%, the best result in the group. Elsewhere, Amazon rose 2.2% and Alphabet rose 1.0%.",
+      "4 of the seven fell. That included Apple and Nvidia, as Apple fell 3.7% and Nvidia fell 2.0%."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states the main event and the sentences are short and plain, though the third bullet's \"That included Apple and Nvidia, as...\" is slightly clumsy and the note never says the figures are for one day.",
+    "tone": 5,
+    "tone_reason": "The note is calm and purely descriptive, using neutral verbs like fell and rose with no hype, drama, advice or predictions."
+   }
+  },
+  {
+   "case": "2023-03-09",
+   "why": "all seven down",
+   "note": {
+    "headline": "{count.down}, with Tesla posting the worst day",
+    "headline_claims": [
+     {
+      "type": "all_down",
+      "ids": [
+       "AAPL",
+       "MSFT",
+       "GOOGL",
+       "AMZN",
+       "NVDA",
+       "META",
+       "TSLA"
+      ]
+     },
+     {
+      "type": "laggard",
+      "ids": [
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{TSLA.move_1d}, the worst result in the group and the biggest move of the day.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "TSLA"
+        ]
+       },
+       {
+        "type": "biggest_mover",
+        "ids": [
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{MSFT.move_1d}, the best result in the group. Meanwhile, {NVDA.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "MSFT"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "Overall, {group.move_1d}, leaving the group {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSa3mCcmWX99g5FGSGJN",
+    "input_tokens": 3089,
+    "output_tokens": 703,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2023-03-09",
+    "why": "all seven down",
+    "guard_problems": [],
+    "claims": 6,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2023-03-09",
+     "headline": "All seven fell, with Tesla posting the worst day",
+     "bullets": [
+      "Tesla fell 5.0%, the worst result in the group and the biggest move of the day.",
+      "Microsoft fell 0.5%, the best result in the group. Meanwhile, Nvidia fell 3.1%.",
+      "Overall, the seven stocks fell 2.2% on average, leaving the group 0.4 percentage points behind the S&P 500 fund (SPY)."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states what happened and the bullets use short, plain sentences, though the 'Meanwhile, Nvidia fell 3.1%' line is an oddly placed aside and 'the biggest move of the day' is slightly redundant.",
+    "tone": 5,
+    "tone_reason": "The note is calm and purely descriptive, with no hype, drama, advice or predictions."
+   }
+  },
+  {
+   "case": "2023-04-11",
+   "why": "ordinary day",
+   "note": {
+    "headline": "{TSLA.move_1d} to lead the group as {count.down}",
+    "headline_claims": [
+     {
+      "type": "leader",
+      "ids": [
+       "TSLA"
+      ]
+     },
+     {
+      "type": "most_down",
+      "ids": [
+       "AAPL",
+       "AMZN",
+       "GOOGL",
+       "META",
+       "MSFT",
+       "NVDA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{group.move_1d}, leaving the group {group.gap_to_spy_1d}. Meanwhile, {SPY.move_1d}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{MSFT.move_1d}, the weakest result in the group, while {AMZN.move_1d}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "MSFT"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "Looking at the year so far, Nvidia is {NVDA.change_ytd} and Meta is {META.change_ytd}.",
+      "claims": []
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSa4Qbuecb58g1VxnJon",
+    "input_tokens": 3150,
+    "output_tokens": 1125,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2023-04-11",
+    "why": "ordinary day",
+    "guard_problems": [],
+    "claims": 4,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2023-04-11",
+     "headline": "Tesla rose 1.2% to lead the group as 6 of the seven fell",
+     "bullets": [
+      "The seven stocks fell 1.0% on average, leaving the group 1.0 percentage points behind the S&P 500 fund (SPY). Meanwhile, the S&P 500 fund (SPY) was flat.",
+      "Microsoft fell 2.3%, the weakest result in the group, while Amazon fell 2.2%.",
+      "Looking at the year so far, Nvidia is up 85.9% so far in 2023 and Meta is up 77.7% so far in 2023."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states what happened in plain words and the bullets are short, but the repeated \"S&P 500 fund (SPY)\" and \"so far in 2023\" phrasing is clumsy, and \"Meanwhile\" plus the \"Looking at the year so far\" bullet read a little awkwardly.",
+    "tone": 5,
+    "tone_reason": "The note is neutral and descriptive, reporting moves and comparisons without hype, drama, advice or predictions."
+   }
+  },
+  {
+   "case": "2023-05-25",
+   "why": "very large single-stock move",
+   "note": {
+    "headline": "Nvidia leads the Magnificent Seven while Amazon lags",
+    "headline_claims": [
+     {
+      "type": "leader",
+      "ids": [
+       "NVDA"
+      ]
+     },
+     {
+      "type": "laggard",
+      "ids": [
+       "AMZN"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{NVDA.move_1d}, the best result in the group and the biggest move of the day.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "NVDA"
+        ]
+       },
+       {
+        "type": "biggest_mover",
+        "ids": [
+         "NVDA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{group.move_1d}, {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_beat_spy",
+        "ids": []
+       }
+      ]
+     },
+     {
+      "text": "{count.up}, while {AMZN.move_1d}, the worst result in the group.",
+      "claims": [
+       {
+        "type": "most_up",
+        "ids": [
+         "AAPL",
+         "GOOGL",
+         "META",
+         "MSFT",
+         "NVDA",
+         "TSLA"
+        ]
+       },
+       {
+        "type": "laggard",
+        "ids": [
+         "AMZN"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSa5Nt13oTCZumsj9LxV",
+    "input_tokens": 3158,
+    "output_tokens": 801,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2023-05-25",
+    "why": "very large single-stock move",
+    "guard_problems": [],
+    "claims": 7,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2023-05-25",
+     "headline": "Nvidia leads the Magnificent Seven while Amazon lags",
+     "bullets": [
+      "Nvidia rose 24.4%, the best result in the group and the biggest move of the day.",
+      "The seven stocks rose 4.5% on average, 3.7 percentage points ahead of the S&P 500 fund (SPY).",
+      "6 of the seven rose, while Amazon fell 1.5%, the worst result in the group."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states what happened and the bullets are short and plain, though the note never says the figures are one-day moves (only 'of the day' appears in the first bullet) and 'lags' and 'the group' are slightly loose.",
+    "tone": 4,
+    "tone_reason": "The note is neutral and descriptive with no advice or predictions, though 'leads' and 'lags' and 'the best/worst result' add a mild competitive framing."
+   }
+  },
+  {
+   "case": "2023-08-23",
+   "why": "all seven up",
+   "note": {
+    "headline": "{count.up}, with Nvidia leading the group",
+    "headline_claims": [
+     {
+      "type": "all_up",
+      "ids": [
+       "AAPL",
+       "MSFT",
+       "GOOGL",
+       "AMZN",
+       "NVDA",
+       "META",
+       "TSLA"
+      ]
+     },
+     {
+      "type": "leader",
+      "ids": [
+       "NVDA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{NVDA.move_1d}, the best result in the group. {AMZN.move_1d}, the weakest showing of the day.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "NVDA"
+        ]
+       },
+       {
+        "type": "laggard",
+        "ids": [
+         "AMZN"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "Overall, {group.move_1d}, which put the group {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_beat_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{GOOGL.move_1d} and {META.move_1d}. Looking at the longer view, Nvidia is {NVDA.change_ytd}.",
+      "claims": []
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSa67q9vdHmC54Dipncf",
+    "input_tokens": 3091,
+    "output_tokens": 900,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2023-08-23",
+    "why": "all seven up",
+    "guard_problems": [],
+    "claims": 5,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2023-08-23",
+     "headline": "All seven rose, with Nvidia leading the group",
+     "bullets": [
+      "Nvidia rose 3.2%, the best result in the group. Amazon rose 0.9%, the weakest showing of the day.",
+      "Overall, the seven stocks rose 2.0% on average, which put the group 0.9 percentage points ahead of the S&P 500 fund (SPY).",
+      "Alphabet rose 2.5% and Meta rose 2.3%. Looking at the longer view, Nvidia is up 222.5% so far in 2023."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states what happened and the sentences are short and plain, but the third bullet jumps from a day's moves to a year-to-date figure with little framing, and 'weakest showing' alongside a gain may briefly confuse.",
+    "tone": 4,
+    "tone_reason": "The note is neutral and descriptive with no advice or predictions, though 'best result' and the 222.5% figure placed as a 'longer view' lean slightly toward highlighting."
+   }
+  },
+  {
+   "case": "2023-12-27",
+   "why": "ordinary day",
+   "note": {
+    "headline": "{TSLA.move_1d}, leading the Magnificent Seven",
+    "headline_claims": [
+     {
+      "type": "leader",
+      "ids": [
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{group.move_1d}, {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_beat_spy",
+        "ids": []
+       }
+      ]
+     },
+     {
+      "text": "{count.up}, {count.down} and {count.flat}. {NVDA.move_1d} and {META.move_1d}.",
+      "claims": []
+     },
+     {
+      "text": "{GOOGL.move_1d}, the weakest result in the group, while {MSFT.move_1d}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "GOOGL"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSa6wYZcBWRhVMYoDtb9",
+    "input_tokens": 3149,
+    "output_tokens": 689,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2023-12-27",
+    "why": "ordinary day",
+    "guard_problems": [],
+    "claims": 3,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2023-12-27",
+     "headline": "Tesla rose 1.9%, leading the Magnificent Seven",
+     "bullets": [
+      "The seven stocks rose 0.3% on average, 0.1 percentage points ahead of the S&P 500 fund (SPY).",
+      "4 of the seven rose, 2 of the seven fell and 1 of the seven was flat. Nvidia rose 0.3% and Meta rose 0.8%.",
+      "Alphabet fell 0.8%, the weakest result in the group, while Microsoft fell 0.2%."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states plainly what happened and the bullets use simple words, though the repeated 'of the seven' phrasing is a bit clunky and the second bullet names only some of the movers without saying which stocks fell or were flat.",
+    "tone": 5,
+    "tone_reason": "The note is calm, neutral and purely descriptive, with no hype, drama, advice or predictions."
+   }
+  },
+  {
+   "case": "2024-01-02",
+   "why": "first trading day of a year",
+   "note": {
+    "headline": "{group.move_1d}; Apple had the worst day",
+    "headline_claims": [
+     {
+      "type": "laggard",
+      "ids": [
+       "AAPL"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{group.move_1d}, {group.gap_to_spy_1d}. For comparison, {SPY.move_1d}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": [
+         "SPY"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{AAPL.move_1d}, the biggest move in the group, while {NVDA.move_1d}.",
+      "claims": [
+       {
+        "type": "biggest_mover",
+        "ids": [
+         "AAPL"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{TSLA.move_1d}, the best showing in the group, while {count.down}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "TSLA"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSa7ciWNeCqEb74NsC5Q",
+    "input_tokens": 3137,
+    "output_tokens": 1051,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2024-01-02",
+    "why": "first trading day of a year",
+    "guard_problems": [],
+    "claims": 4,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2024-01-02",
+     "headline": "The seven stocks fell 1.8% on average; Apple had the worst day",
+     "bullets": [
+      "The seven stocks fell 1.8% on average, 1.2 percentage points behind the S&P 500 fund (SPY). For comparison, the S&P 500 fund (SPY) fell 0.6%.",
+      "Apple fell 3.6%, the biggest move in the group, while Nvidia fell 2.7%.",
+      "Tesla was flat, the best showing in the group, while 6 of the seven fell."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states what happened and the words are plain, but the first bullet repeats the SPY name and figure awkwardly, and \"the best showing\" for a flat Tesla may need a second look.",
+    "tone": 4,
+    "tone_reason": "The note is calm and descriptive with no advice or predictions, though \"had the worst day\" and \"best showing\" are mildly evaluative."
+   }
+  },
+  {
+   "case": "2024-09-16",
+   "why": "ordinary day",
+   "note": {
+    "headline": "{AAPL.move_1d}, the worst result among the Magnificent Seven",
+    "headline_claims": [
+     {
+      "type": "laggard",
+      "ids": [
+       "AAPL"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{META.move_1d}, the best result in the group. Elsewhere, {MSFT.move_1d} and {GOOGL.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "META"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "Overall, {group.move_1d}, leaving the group {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{count.down}. Among them, {NVDA.move_1d} and {TSLA.move_1d}.",
+      "claims": []
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSa8U7MVAGzL7dHHWrDU",
+    "input_tokens": 3151,
+    "output_tokens": 1040,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2024-09-16",
+    "why": "ordinary day",
+    "guard_problems": [],
+    "claims": 3,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2024-09-16",
+     "headline": "Apple fell 2.8%, the worst result among the Magnificent Seven",
+     "bullets": [
+      "Meta rose 1.7%, the best result in the group. Elsewhere, Microsoft rose 0.2% and Alphabet rose 0.4%.",
+      "Overall, the seven stocks fell 0.7% on average, leaving the group 0.8 percentage points behind the S&P 500 fund (SPY).",
+      "4 of the seven fell. Among them, Nvidia fell 1.9% and Tesla fell 1.5%."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states what happened and the bullets use plain words and short sentences, though the bullet order jumps around (best performer, group average, then decliners) and the phrase 'Elsewhere' is slightly vague.",
+    "tone": 5,
+    "tone_reason": "The note is calm and descriptive, uses neutral verbs like 'rose' and 'fell', and offers no hype, predictions or advice."
+   }
+  },
+  {
+   "case": "2025-01-02",
+   "why": "first trading day of a year",
+   "note": {
+    "headline": "{TSLA.move_1d}, the weakest result in the group",
+    "headline_claims": [
+     {
+      "type": "laggard",
+      "ids": [
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{NVDA.move_1d}, the best result in the group. {META.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "NVDA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "Overall, {group.move_1d}, leaving the group {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{count.up}, while {count.down}. {AAPL.move_1d} and {MSFT.change_1d}.",
+      "claims": []
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSa9dEa2vg9pdLTz2weL",
+    "input_tokens": 3156,
+    "output_tokens": 875,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2025-01-02",
+    "why": "first trading day of a year",
+    "guard_problems": [
+     "bullet 3: ['{MSFT.change_1d}'] must follow the same company's name in the sentence"
+    ],
+    "claims": 3,
+    "claim_errors": [],
+    "passed": false,
+    "shown": null
+   },
+   "judge": {
+    "clarity": 3,
+    "clarity_reason": "The headline and first bullets are plain and clear, but the last bullet has a garbled sentence, 'Apple fell 2.6% and fell 0.7%', that leaves out Microsoft's name, so the reader can't tell what the second drop refers to.",
+    "tone": 5,
+    "tone_reason": "The note is calm, neutral and purely descriptive, with no hype, drama, advice or predictions."
+   }
+  },
+  {
+   "case": "2025-06-05",
+   "why": "ordinary day",
+   "note": {
+    "headline": "{TSLA.move_1d}, the biggest move and worst in the group",
+    "headline_claims": [
+     {
+      "type": "laggard",
+      "ids": [
+       "TSLA"
+      ]
+     },
+     {
+      "type": "biggest_mover",
+      "ids": [
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{group.move_1d}, {group.gap_to_spy_1d}. Tesla is {TSLA.change_5d}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": []
+       }
+      ]
+     },
+     {
+      "text": "{MSFT.move_1d}, the best result in the group. {count.up}, as {GOOGL.move_1d} and {AMZN.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "MSFT"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{count.down}. {NVDA.move_1d} and {AAPL.move_1d}, while {SPY.move_1d}.",
+      "claims": []
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSaAMSKpPk2oPZh8Ezh4",
+    "input_tokens": 3156,
+    "output_tokens": 1047,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2025-06-05",
+    "why": "ordinary day",
+    "guard_problems": [],
+    "claims": 4,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2025-06-05",
+     "headline": "Tesla fell 14.3%, the biggest move and worst in the group",
+     "bullets": [
+      "The seven stocks fell 2.3% on average, 1.8 percentage points behind the S&P 500 fund (SPY). Tesla is down 20.6% over five trading days.",
+      "Microsoft rose 0.8%, the best result in the group. 3 of the seven rose, as Alphabet rose 0.1% and Amazon rose 0.3%.",
+      "4 of the seven fell. Nvidia fell 1.4% and Apple fell 1.1%, while the S&P 500 fund (SPY) fell 0.5%."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 4,
+    "clarity_reason": "The headline states what happened and the sentences are short and plain, but the second bullet runs together a count and two small gainers awkwardly, and the five-day figure for Tesla is dropped into the first bullet without a link to the rest.",
+    "tone": 5,
+    "tone_reason": "The note only describes the moves in neutral wording, with no hype, drama, advice or predictions."
+   }
+  },
+  {
+   "case": "2026-01-02",
+   "why": "first trading day of a year",
+   "note": {
+    "headline": "Magnificent Seven trail the S&P 500 fund as Tesla lags",
+    "headline_claims": [
+     {
+      "type": "group_trailed_spy",
+      "ids": [
+       "AAPL",
+       "MSFT",
+       "GOOGL",
+       "AMZN",
+       "NVDA",
+       "META",
+       "TSLA"
+      ]
+     },
+     {
+      "type": "laggard",
+      "ids": [
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{group.move_1d}, {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_trailed_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{count.up}. {NVDA.move_1d}, the best result in the group, and {GOOGL.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "NVDA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{count.down}. {TSLA.move_1d}, the weakest result and the biggest move in the group, and is {TSLA.change_5d}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "TSLA"
+        ]
+       },
+       {
+        "type": "biggest_mover",
+        "ids": [
+         "TSLA"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSaBFpGWEHLFBqHPsi7L",
+    "input_tokens": 3154,
+    "output_tokens": 1145,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2026-01-02",
+    "why": "first trading day of a year",
+    "guard_problems": [],
+    "claims": 6,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2026-01-02",
+     "headline": "Magnificent Seven trail the S&P 500 fund as Tesla lags",
+     "bullets": [
+      "The seven stocks fell 0.9% on average, 1.1 percentage points behind the S&P 500 fund (SPY).",
+      "2 of the seven rose. Nvidia rose 1.3%, the best result in the group, and Alphabet rose 0.7%.",
+      "5 of the seven fell. Tesla fell 2.6%, the weakest result and the biggest move in the group, and is down 9.8% over five trading days."
+     ]
+    }
+   }
+  },
+  {
+   "case": "2026-02-24",
+   "why": "ordinary day",
+   "note": {
+    "headline": "{TSLA.move_1d}, leading the group",
+    "headline_claims": [
+     {
+      "type": "leader",
+      "ids": [
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "On the day, {group.move_1d}, {group.gap_to_spy_1d}.",
+      "claims": [
+       {
+        "type": "group_beat_spy",
+        "ids": []
+       }
+      ]
+     },
+     {
+      "text": "{count.up}. Among them, {AAPL.move_1d} and {AMZN.move_1d}.",
+      "claims": [
+       {
+        "type": "most_up",
+        "ids": [
+         "AAPL",
+         "AMZN",
+         "META",
+         "MSFT",
+         "NVDA",
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{GOOGL.move_1d}, the only stock in the group to do so and the weakest result of the day.",
+      "claims": [
+       {
+        "type": "only_down",
+        "ids": [
+         "GOOGL"
+        ]
+       },
+       {
+        "type": "laggard",
+        "ids": [
+         "GOOGL"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "3",
+    "effort": "medium",
+    "request_id": "req_011ChSaC2oTWpaBuTh1jRKSa",
+    "input_tokens": 3159,
+    "output_tokens": 864,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2026-02-24",
+    "why": "ordinary day",
+    "guard_problems": [],
+    "claims": 5,
+    "claim_errors": [],
+    "passed": true,
+    "shown": {
+     "as_of": "2026-02-24",
+     "headline": "Tesla rose 2.4%, leading the group",
+     "bullets": [
+      "On the day, the seven stocks rose 1.2% on average, 0.4 percentage points ahead of the S&P 500 fund (SPY).",
+      "6 of the seven rose. Among them, Apple rose 2.2% and Amazon rose 1.6%.",
+      "Alphabet fell 0.2%, the only stock in the group to do so and the weakest result of the day."
+     ]
+    }
+   },
+   "judge": {
+    "clarity": 5,
+    "clarity_reason": "The headline states what happened, the sentences are short and plain, and the bullets give the group result, the breadth (6 of 7 rose) and the one decliner without jargon.",
+    "tone": 4,
+    "tone_reason": "It is neutral and descriptive with no advice or predictions, though 'leading the group' and 'weakest result of the day' are mildly ranking-oriented phrasing rather than purely flat description."
+   }
+  }
+ ]
+}
