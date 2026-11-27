@@ -1,0 +1,253 @@
+{
+ "id": "2023-05-25",
+ "why": "very large single-stock move",
+ "facts": {
+  "as_of": "2023-05-25",
+  "previous_session": "2023-05-24",
+  "five_sessions_back": "2023-05-18",
+  "previous_year_end": "2022-12-30",
+  "facts": {
+   "date": {
+    "value": "2023-05-25",
+    "text": "Thursday, May 25, 2023"
+   },
+   "AAPL.close": {
+    "value": 170.32,
+    "text": "$170.32"
+   },
+   "AAPL.change_1d": {
+    "value": 0.006692270888883245,
+    "text": "rose 0.7%"
+   },
+   "AAPL.move_1d": {
+    "value": 0.006692270888883245,
+    "text": "Apple rose 0.7%"
+   },
+   "AAPL.change_5d": {
+    "value": -0.011767981627496482,
+    "text": "down 1.2% over five trading days"
+   },
+   "AAPL.change_ytd": {
+    "value": 0.33528669910313735,
+    "text": "up 33.5% so far in 2023"
+   },
+   "MSFT.close": {
+    "value": 317.79,
+    "text": "$317.79"
+   },
+   "MSFT.change_1d": {
+    "value": 0.038458082630567825,
+    "text": "rose 3.8%"
+   },
+   "MSFT.move_1d": {
+    "value": 0.038458082630567825,
+    "text": "Microsoft rose 3.8%"
+   },
+   "MSFT.change_5d": {
+    "value": 0.023232621790584718,
+    "text": "up 2.3% over five trading days"
+   },
+   "MSFT.change_ytd": {
+    "value": 0.36540165860293894,
+    "text": "up 36.5% so far in 2023"
+   },
+   "GOOGL.close": {
+    "value": 122.32,
+    "text": "$122.32"
+   },
+   "GOOGL.change_1d": {
+    "value": 0.021339935259939935,
+    "text": "rose 2.1%"
+   },
+   "GOOGL.move_1d": {
+    "value": 0.021339935259939935,
+    "text": "Alphabet rose 2.1%"
+   },
+   "GOOGL.change_5d": {
+    "value": 0.00529182011761975,
+    "text": "up 0.5% over five trading days"
+   },
+   "GOOGL.change_ytd": {
+    "value": 0.39952379115039993,
+    "text": "up 40.0% so far in 2023"
+   },
+   "AMZN.close": {
+    "value": 115.0,
+    "text": "$115.00"
+   },
+   "AMZN.change_1d": {
+    "value": -0.01498929336188437,
+    "text": "fell 1.5%"
+   },
+   "AMZN.move_1d": {
+    "value": -0.01498929336188437,
+    "text": "Amazon fell 1.5%"
+   },
+   "AMZN.change_5d": {
+    "value": -0.02666103669231823,
+    "text": "down 2.7% over five trading days"
+   },
+   "AMZN.change_ytd": {
+    "value": 0.36904761904761907,
+    "text": "up 36.9% so far in 2023"
+   },
+   "NVDA.close": {
+    "value": 37.86,
+    "text": "$37.86"
+   },
+   "NVDA.change_1d": {
+    "value": 0.24369646911794773,
+    "text": "rose 24.4%"
+   },
+   "NVDA.move_1d": {
+    "value": 0.24369646911794773,
+    "text": "Nvidia rose 24.4%"
+   },
+   "NVDA.change_5d": {
+    "value": 0.19893932433116435,
+    "text": "up 19.9% over five trading days"
+   },
+   "NVDA.change_ytd": {
+    "value": 1.599319078211197,
+    "text": "up 159.9% so far in 2023"
+   },
+   "META.close": {
+    "value": 250.29,
+    "text": "$250.29"
+   },
+   "META.change_1d": {
+    "value": 0.013964147014523975,
+    "text": "rose 1.4%"
+   },
+   "META.move_1d": {
+    "value": 0.013964147014523975,
+    "text": "Meta rose 1.4%"
+   },
+   "META.change_5d": {
+    "value": 0.0236581965637106,
+    "text": "up 2.4% over five trading days"
+   },
+   "META.change_ytd": {
+    "value": 1.0998006409163796,
+    "text": "up 110.0% so far in 2023"
+   },
+   "TSLA.close": {
+    "value": 184.47,
+    "text": "$184.47"
+   },
+   "TSLA.change_1d": {
+    "value": 0.008583965973816943,
+    "text": "rose 0.9%"
+   },
+   "TSLA.move_1d": {
+    "value": 0.008583965973816943,
+    "text": "Tesla rose 0.9%"
+   },
+   "TSLA.change_5d": {
+    "value": 0.04285150012555361,
+    "text": "up 4.3% over five trading days"
+   },
+   "TSLA.change_ytd": {
+    "value": 0.49756454589773247,
+    "text": "up 49.8% so far in 2023"
+   },
+   "SPY.close": {
+    "value": 397.01,
+    "text": "$397.01"
+   },
+   "SPY.change_1d": {
+    "value": 0.00865966272533436,
+    "text": "rose 0.9%"
+   },
+   "SPY.move_1d": {
+    "value": 0.00865966272533436,
+    "text": "the S&P 500 fund (SPY) rose 0.9%"
+   },
+   "SPY.change_5d": {
+    "value": -0.010924981237953713,
+    "text": "down 1.1% over five trading days"
+   },
+   "SPY.change_ytd": {
+    "value": 0.08838842949969417,
+    "text": "up 8.8% so far in 2023"
+   },
+   "group.move_1d": {
+    "value": 0.04539222536054218,
+    "text": "the seven stocks rose 4.5% on average"
+   },
+   "group.gap_to_spy_1d": {
+    "value": 0.03673256263520782,
+    "text": "3.7 percentage points ahead of the S&P 500 fund (SPY)"
+   },
+   "count.up": {
+    "value": 6,
+    "text": "6 of the seven rose"
+   },
+   "count.down": {
+    "value": 1,
+    "text": "1 of the seven fell"
+   },
+   "count.flat": {
+    "value": 0,
+    "text": "none of the seven was flat"
+   }
+  },
+  "claims": {
+   "best_1d": [
+    "NVDA"
+   ],
+   "worst_1d": [
+    "AMZN"
+   ],
+   "biggest_mover_1d": [
+    "NVDA"
+   ],
+   "up": [
+    "AAPL",
+    "GOOGL",
+    "META",
+    "MSFT",
+    "NVDA",
+    "TSLA"
+   ],
+   "down": [
+    "AMZN"
+   ],
+   "flat": [],
+   "all_up": false,
+   "all_down": false,
+   "group_beat_spy": true,
+   "group_trailed_spy": false
+  },
+  "hash": "9847bf8ac04ad4d45ca8607132a4c7db7863701799687d027e735a01918a020f"
+ },
+ "expected": {
+  "leader": [
+   "NVDA"
+  ],
+  "laggard": [
+   "AMZN"
+  ],
+  "biggest_mover": [
+   "NVDA"
+  ],
+  "up": [
+   "AAPL",
+   "GOOGL",
+   "META",
+   "MSFT",
+   "NVDA",
+   "TSLA"
+  ],
+  "down": [
+   "AMZN"
+  ],
+  "flat": [],
+  "all_up": false,
+  "all_down": false,
+  "most_up": true,
+  "most_down": false,
+  "group_beat_spy": true,
+  "group_trailed_spy": false
+ }
+}

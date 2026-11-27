@@ -1,0 +1,223 @@
+{
+ "id": "2021-12-08",
+ "why": "two or more flat stocks",
+ "facts": {
+  "as_of": "2021-12-08",
+  "previous_session": "2021-12-07",
+  "five_sessions_back": "2021-12-01",
+  "previous_year_end": null,
+  "facts": {
+   "date": {
+    "value": "2021-12-08",
+    "text": "Wednesday, December 8, 2021"
+   },
+   "AAPL.close": {
+    "value": 170.89,
+    "text": "$170.89"
+   },
+   "AAPL.change_1d": {
+    "value": 0.022783334347050266,
+    "text": "rose 2.3%"
+   },
+   "AAPL.move_1d": {
+    "value": 0.022783334347050266,
+    "text": "Apple rose 2.3%"
+   },
+   "AAPL.change_5d": {
+    "value": 0.06257208998405006,
+    "text": "up 6.3% over five trading days"
+   },
+   "MSFT.close": {
+    "value": 322.07,
+    "text": "$322.07"
+   },
+   "MSFT.change_1d": {
+    "value": 0.00014935630842760617,
+    "text": "was flat"
+   },
+   "MSFT.move_1d": {
+    "value": 0.00014935630842760617,
+    "text": "Microsoft was flat"
+   },
+   "MSFT.change_5d": {
+    "value": 0.014814810541087908,
+    "text": "up 1.5% over five trading days"
+   },
+   "GOOGL.close": {
+    "value": 146.79,
+    "text": "$146.79"
+   },
+   "GOOGL.change_1d": {
+    "value": 0.006226674811306454,
+    "text": "rose 0.6%"
+   },
+   "GOOGL.move_1d": {
+    "value": 0.006226674811306454,
+    "text": "Alphabet rose 0.6%"
+   },
+   "GOOGL.change_5d": {
+    "value": 0.05058438422604894,
+    "text": "up 5.1% over five trading days"
+   },
+   "AMZN.close": {
+    "value": 176.16,
+    "text": "$176.16"
+   },
+   "AMZN.change_1d": {
+    "value": -3.689871657430732e-05,
+    "text": "was flat"
+   },
+   "AMZN.move_1d": {
+    "value": -3.689871657430732e-05,
+    "text": "Amazon was flat"
+   },
+   "AMZN.change_5d": {
+    "value": 0.02306807763154417,
+    "text": "up 2.3% over five trading days"
+   },
+   "NVDA.close": {
+    "value": 31.69,
+    "text": "$31.69"
+   },
+   "NVDA.change_1d": {
+    "value": -0.018533839947327047,
+    "text": "fell 1.9%"
+   },
+   "NVDA.move_1d": {
+    "value": -0.018533839947327047,
+    "text": "Nvidia fell 1.9%"
+   },
+   "NVDA.change_5d": {
+    "value": 0.012438203541219606,
+    "text": "up 1.2% over five trading days"
+   },
+   "META.close": {
+    "value": 327.42,
+    "text": "$327.42"
+   },
+   "META.change_1d": {
+    "value": 0.02400794694224917,
+    "text": "rose 2.4%"
+   },
+   "META.move_1d": {
+    "value": 0.02400794694224917,
+    "text": "Meta rose 2.4%"
+   },
+   "META.change_5d": {
+    "value": 0.06426276985041546,
+    "text": "up 6.4% over five trading days"
+   },
+   "TSLA.close": {
+    "value": 356.32,
+    "text": "$356.32"
+   },
+   "TSLA.change_1d": {
+    "value": 0.016363195584229162,
+    "text": "rose 1.6%"
+   },
+   "TSLA.move_1d": {
+    "value": 0.016363195584229162,
+    "text": "Tesla rose 1.6%"
+   },
+   "TSLA.change_5d": {
+    "value": -0.02378080185145548,
+    "text": "down 2.4% over five trading days"
+   },
+   "SPY.close": {
+    "value": 439.14,
+    "text": "$439.14"
+   },
+   "SPY.change_1d": {
+    "value": 0.002647952785433505,
+    "text": "rose 0.3%"
+   },
+   "SPY.move_1d": {
+    "value": 0.002647952785433505,
+    "text": "the S&P 500 fund (SPY) rose 0.3%"
+   },
+   "SPY.change_5d": {
+    "value": 0.04221984644075927,
+    "text": "up 4.2% over five trading days"
+   },
+   "group.move_1d": {
+    "value": 0.007279967047051615,
+    "text": "the seven stocks rose 0.7% on average"
+   },
+   "group.gap_to_spy_1d": {
+    "value": 0.00463201426161811,
+    "text": "0.5 percentage points ahead of the S&P 500 fund (SPY)"
+   },
+   "count.up": {
+    "value": 4,
+    "text": "4 of the seven rose"
+   },
+   "count.down": {
+    "value": 1,
+    "text": "1 of the seven fell"
+   },
+   "count.flat": {
+    "value": 2,
+    "text": "2 of the seven were flat"
+   }
+  },
+  "claims": {
+   "best_1d": [
+    "META"
+   ],
+   "worst_1d": [
+    "NVDA"
+   ],
+   "biggest_mover_1d": [
+    "META"
+   ],
+   "up": [
+    "AAPL",
+    "GOOGL",
+    "META",
+    "TSLA"
+   ],
+   "down": [
+    "NVDA"
+   ],
+   "flat": [
+    "AMZN",
+    "MSFT"
+   ],
+   "all_up": false,
+   "all_down": false,
+   "group_beat_spy": true,
+   "group_trailed_spy": false
+  },
+  "hash": "82625ad29b53c7314d869aa24b1ee96f8f01af98d650190c06f2ec838d09cda1"
+ },
+ "expected": {
+  "leader": [
+   "META"
+  ],
+  "laggard": [
+   "NVDA"
+  ],
+  "biggest_mover": [
+   "META"
+  ],
+  "up": [
+   "AAPL",
+   "GOOGL",
+   "META",
+   "TSLA"
+  ],
+  "down": [
+   "NVDA"
+  ],
+  "flat": [
+   "AMZN",
+   "MSFT"
+  ],
+  "all_up": false,
+  "all_down": false,
+  "most_up": true,
+  "most_down": false,
+  "group_beat_spy": true,
+  "group_trailed_spy": false
+ }
+}
