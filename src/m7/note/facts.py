@@ -79,11 +79,10 @@ def build_facts(prices, as_of=None):
     last_year = index[(index.year == as_of.year - 1) & (index <= as_of)]
     year_end = last_year[-1] if len(last_year) else None
 
-    facts, raw = {}, {}
+    facts = {}
 
     def add(fact_id, value, text):
         facts[fact_id] = {"value": value, "text": text}
-        raw[fact_id] = value
 
     add("date", as_of.strftime("%Y-%m-%d"), f"{as_of:%A, %B} {as_of.day}, {as_of.year}")
     shown_1d = {}
@@ -142,7 +141,10 @@ def build_facts(prices, as_of=None):
         "group_beat_spy": gap_pp > 0, "group_trailed_spy": gap_pp < 0,
     }
 
-    digest = hashlib.sha256(json.dumps(raw, sort_keys=True, default=str).encode()).hexdigest()
+    # The hash covers what a reader would see (each fact's wording and the true claims), not the raw
+    # floats: Yahoo's rounding differences between downloads change those without changing the note.
+    seen = {"facts": {k: v["text"] for k, v in facts.items()}, "claims": claims}
+    digest = hashlib.sha256(json.dumps(seen, sort_keys=True).encode()).hexdigest()
     return {
         "as_of": as_of.strftime("%Y-%m-%d"),
         "previous_session": prev_1.strftime("%Y-%m-%d"),

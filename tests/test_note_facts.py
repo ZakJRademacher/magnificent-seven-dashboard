@@ -152,6 +152,13 @@ class Edges(unittest.TestCase):
         changed.loc["2025-01-02", "AAPL"] = 121.5
         self.assertNotEqual(a, build_facts(changed, "2025-01-02")["hash"])
 
+    def test_rounding_noise_between_downloads_keeps_the_hash(self):
+        # Yahoo's adjusted closes differ by up to about 1e-5 between downloads; the wording doesn't change.
+        a = build_facts(PRICES, "2025-01-02")["hash"]
+        noisy = PRICES.copy()
+        noisy.loc["2025-01-02", "AAPL"] *= 1 + 1e-6
+        self.assertEqual(a, build_facts(noisy, "2025-01-02")["hash"])
+
 
 class CachedHistory(unittest.TestCase):
     """The fact sheet for the latest cached day agrees with a direct calculation from the CSV."""
