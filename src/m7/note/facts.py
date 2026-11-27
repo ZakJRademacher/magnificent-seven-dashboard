@@ -123,7 +123,13 @@ def build_facts(prices, as_of=None):
     flat = sorted(t for t, d in seven.items() if d == 0)
     for key, group_list, verb in (("up", up, "rose"), ("down", down, "fell"), ("flat", flat, "were flat")):
         n = len(group_list)
-        add(f"count.{key}", n, f"{n} of the seven {'was flat' if verb == 'were flat' and n == 1 else verb}")
+        if n == len(TICKERS):
+            text = f"all seven {verb}"
+        elif n == 0:
+            text = f"none of the seven {'was flat' if key == 'flat' else verb}"
+        else:
+            text = f"{n} of the seven {'was flat' if key == 'flat' and n == 1 else verb}"
+        add(f"count.{key}", n, text)
 
     best, worst = max(seven.values()), min(seven.values())
     biggest = max(abs(d) for d in seven.values())

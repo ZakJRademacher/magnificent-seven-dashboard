@@ -26,6 +26,8 @@ DIRECTION = {
     "up", "down", "higher", "lower", "climbed", "climb", "dropped", "drop", "drops", "slid", "slipped",
     "rallied", "rally", "jumped", "jump", "surged", "surge", "soared", "sank", "tumbled", "plunged",
     "declined", "decline", "advanced", "advance", "rebounded", "rebound", "flat", "unchanged",
+    "slide", "slides", "sliding", "selloff", "sell-off", "retreat", "retreated", "pullback", "dip", "dipped",
+    "rallies", "recovered", "recovery", "slump", "slumped", "spiked", "crashed", "crash", "weaker", "stronger",
 }
 
 # Claims that need a tag, and the tag types that can support them.

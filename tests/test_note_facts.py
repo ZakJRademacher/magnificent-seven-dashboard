@@ -132,9 +132,12 @@ class Edges(unittest.TestCase):
 
     def test_all_up(self):
         p = frame({t: FLAT6 + [100.0, 101.0] for t in TICKERS})
-        c = build_facts(p, "2025-01-02")["claims"]
-        self.assertTrue(c["all_up"])
-        self.assertEqual(len(c["best_1d"]), 7)
+        s = build_facts(p, "2025-01-02")
+        self.assertTrue(s["claims"]["all_up"])
+        self.assertEqual(len(s["claims"]["best_1d"]), 7)
+        self.assertEqual(s["facts"]["count.up"]["text"], "all seven rose")
+        self.assertEqual(s["facts"]["count.down"]["text"], "none of the seven fell")
+        self.assertEqual(s["facts"]["count.flat"]["text"], "none of the seven was flat")
 
     def test_rejects_dates_without_a_comparison(self):
         with self.assertRaises(ValueError):
