@@ -34,15 +34,18 @@ RESULTS = HERE / "results"
 # US dollars per million tokens (input, output), from Anthropic's published prices.
 PRICES = {"claude-opus-5-5": (4.00, 20.00), "claude-sonnet-5-5": (2.00, 10.00)}
 JUDGE_MODEL = "claude-sonnet-5-5"
-# Rough sizes for --estimate, per call: (input, output) tokens.
-WRITER_TOKENS = (2500, 800)
+# Sizes for --estimate, per call: (input, output) tokens, from the 2026-11-27 runs
+# (writer output, including thinking, averaged about 900 tokens).
+WRITER_TOKENS = (2600, 950)
 JUDGE_TOKENS = (1200, 300)
 
 JUDGE_SYSTEM = """\
 You review a short daily stock-market note written for non-experts. You get the note \
 as published and the fact sheet it was written from. Every number in the note was \
-filled in by code from the fact sheet, so don't check arithmetic. Score two things \
-from 1 (poor) to 5 (excellent):
+filled in by code from the fact sheet, so don't check arithmetic. The note appears on \
+a dashboard titled "Magnificent Seven" that already introduces the seven stocks, the \
+S&P 500 fund (SPY) and what a percentage-point gap means, so don't mark it down for \
+not defining those. Score two things from 1 (poor) to 5 (excellent):
 
 clarity: would a reader with no finance background understand it on one read? \
 Plain words, short sentences, no jargon, a headline that says what happened.

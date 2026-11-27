@@ -20,7 +20,10 @@ MODEL = "claude-opus-5-5"
 EFFORT = "medium"        # the evals decide whether "low" holds quality
 MAX_TOKENS = 4000
 TIMEOUT_SECONDS = 120
-PROMPT_VERSION = "1"
+PROMPT_VERSION = "4"
+# v2: number words like "seven" and "two" named as off-limits; full sentences.
+# v3: no repeating what a placeholder already says; higher/lower named; length guidance.
+# v4: a {T.change_*} placeholder (no company name) only after that company is named in the same sentence.
 
 CLAIM_TYPES = [
     "leader", "laggard", "biggest_mover", "only_up", "only_down",
@@ -67,15 +70,27 @@ Write one headline (at most about ten words) and exactly three bullets.
 Rules for every word you write:
 - Every figure and every direction of movement comes from a placeholder: write {fact_id} and it \
 will be replaced by that fact's wording. Never type a number, a percentage, a price, a date, or a \
-spelled-out number, and never write words like rose, fell, gained, lost, up, down, flat or unchanged \
-yourself: use the placeholder, which already says the direction.
+spelled-out number, and never write words like rose, fell, gained, lost, up, down, higher, lower, \
+flat or unchanged yourself: use the placeholder, which already says the direction.
+- {T.move_1d} includes the company name; {T.change_1d}, {T.change_5d} and {T.change_ytd} don't. \
+Use a change placeholder only after the same company has been named earlier in the same sentence \
+("{AAPL.move_1d}, leaving it {AAPL.change_ytd}"), never after another company or in a new \
+sentence that starts "It" or "The stock". To mention a second company, use its move placeholder.
+- Read each placeholder's wording before using it and don't repeat what it already says: \
+{group.move_1d} already ends "on average", and {group.gap_to_spy_1d} already names the S&P 500 \
+fund, so don't add "on average" or name the fund again in the same sentence.
 - Describe what happened. Do not predict, give reasons that are not in the facts, give advice, or \
 say anything about what investors should do.
 - Words such as best, led, worst, lagged, biggest, all, every, most, only, ahead, behind, beat or \
 trailed state a claim. Use them only when that claim is in today's true claims, and list it in the \
 claims for that headline or bullet, with every stock it covers (ties name all tied stocks).
+- Number words count as numbers too: never write seven, two, three, half, dozen, or any other \
+number word. Call the stocks "the group" or "the Magnificent Seven", never \
+"the seven". To say how many rose, fell or were flat, use {count.up}, {count.down} or {count.flat}.
 - Name only these companies, by their usual names or tickers. Plain, calm wording; no hype.
-- Each bullet uses at least one placeholder. A placeholder that starts a sentence is capitalised for you.
+- Each bullet uses at least one placeholder and is made of complete sentences (a list of \
+placeholders on its own is not a sentence). Keep each bullet to one or two short sentences, about \
+thirty words once the placeholders are filled in; you don't need to mention every stock. A placeholder that starts a sentence is capitalised for you.
 
 Example bullet text: "{NVDA.move_1d}, the best result in the group." with claims \
 [{"type": "leader", "ids": ["NVDA"]}] when Nvidia is today's only leader.

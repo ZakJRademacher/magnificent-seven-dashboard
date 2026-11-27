@@ -1,0 +1,266 @@
+{
+ "label": "smoke",
+ "run_at": "2026-11-27T01:27Z",
+ "settings": {
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "prompt_version": "1",
+  "judge_model": "claude-sonnet-5-5"
+ },
+ "summary": {
+  "cases": 3,
+  "passed": 0,
+  "pass_rate": 0.0,
+  "guard_failures": 3,
+  "claims_tagged": 16,
+  "claims_wrong": 0,
+  "release_gate_met": false
+ },
+ "cost_usd": 0.0688,
+ "rows": [
+  {
+   "case": "2021-11-03",
+   "why": "all seven up",
+   "note": {
+    "headline": "{count.up}, with Tesla leading the group",
+    "headline_claims": [
+     {
+      "type": "all_up",
+      "ids": [
+       "AAPL",
+       "MSFT",
+       "GOOGL",
+       "AMZN",
+       "NVDA",
+       "META",
+       "TSLA"
+      ]
+     },
+     {
+      "type": "leader",
+      "ids": [
+       "TSLA"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{TSLA.move_1d}, the best result of the seven, while {MSFT.move_1d}, the weakest result in the group.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "TSLA"
+        ]
+       },
+       {
+        "type": "laggard",
+        "ids": [
+         "MSFT"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "Among the rest, {AMZN.move_1d}, {META.move_1d}, {AAPL.move_1d}, {GOOGL.move_1d} and {NVDA.move_1d}.",
+      "claims": []
+     },
+     {
+      "text": "{group.move_1d}, {group.gap_to_spy_1d}; {SPY.move_1d}.",
+      "claims": [
+       {
+        "type": "group_beat_spy",
+        "ids": [
+         "AAPL",
+         "MSFT",
+         "GOOGL",
+         "AMZN",
+         "NVDA",
+         "META",
+         "TSLA"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "effort": "medium",
+    "request_id": "req_011ChSZbkkrq5vFmJ37sBm8R",
+    "input_tokens": 2408,
+    "output_tokens": 871,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2021-11-03",
+    "why": "all seven up",
+    "guard_problems": [
+     "bullet 1: numbers must come from placeholders, found ['seven']"
+    ],
+    "claims": 5,
+    "claim_errors": [],
+    "passed": false,
+    "shown": null
+   }
+  },
+  {
+   "case": "2021-11-05",
+   "why": "group level with SPY",
+   "note": {
+    "headline": "Meta leads a mixed day for big tech stocks",
+    "headline_claims": [
+     {
+      "type": "leader",
+      "ids": [
+       "META"
+      ]
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{META.move_1d}, the best result in the group, while {AMZN.move_1d}.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "META"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{TSLA.move_1d}, the weakest result of the seven. {MSFT.move_1d} and {NVDA.move_1d}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "Overall, {count.up}, and {group.move_1d}, {group.gap_to_spy_1d}, as {SPY.move_1d}.",
+      "claims": []
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "effort": "medium",
+    "request_id": "req_011ChSZcQN3VEWqnTeF4amXy",
+    "input_tokens": 2455,
+    "output_tokens": 651,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2021-11-05",
+    "why": "group level with SPY",
+    "guard_problems": [
+     "bullet 2: numbers must come from placeholders, found ['seven']"
+    ],
+    "claims": 3,
+    "claim_errors": [],
+    "passed": false,
+    "shown": null
+   }
+  },
+  {
+   "case": "2021-11-11",
+   "why": "two or more flat stocks",
+   "note": {
+    "headline": "Nvidia leads as the seven tech stocks edge ahead of SPY",
+    "headline_claims": [
+     {
+      "type": "leader",
+      "ids": [
+       "NVDA"
+      ]
+     },
+     {
+      "type": "group_beat_spy",
+      "ids": []
+     }
+    ],
+    "bullets": [
+     {
+      "text": "{NVDA.move_1d}, the best result in the group and the biggest move of the day; {MSFT.move_1d}, and the two were the only gainers.",
+      "claims": [
+       {
+        "type": "leader",
+        "ids": [
+         "NVDA"
+        ]
+       },
+       {
+        "type": "biggest_mover",
+        "ids": [
+         "NVDA"
+        ]
+       },
+       {
+        "type": "only_up",
+        "ids": [
+         "MSFT",
+         "NVDA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "{TSLA.move_1d}, the weakest result in the group, while {AMZN.move_1d} and {GOOGL.move_1d}; {AAPL.move_1d} and {META.move_1d}.",
+      "claims": [
+       {
+        "type": "laggard",
+        "ids": [
+         "TSLA"
+        ]
+       },
+       {
+        "type": "only_down",
+        "ids": [
+         "AMZN",
+         "GOOGL",
+         "TSLA"
+        ]
+       }
+      ]
+     },
+     {
+      "text": "On average {group.move_1d}, {group.gap_to_spy_1d}, as {SPY.move_1d}.",
+      "claims": [
+       {
+        "type": "group_beat_spy",
+        "ids": []
+       }
+      ]
+     }
+    ]
+   },
+   "meta": {
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "effort": "medium",
+    "request_id": "req_011ChSZcu1EeVsBB7sKG3oC9",
+    "input_tokens": 2645,
+    "output_tokens": 417,
+    "stop_reason": "end_turn"
+   },
+   "grade": {
+    "case": "2021-11-11",
+    "why": "two or more flat stocks",
+    "guard_problems": [
+     "headline: numbers must come from placeholders, found ['seven']",
+     "bullet 1: numbers must come from placeholders, found ['two']"
+    ],
+    "claims": 8,
+    "claim_errors": [],
+    "passed": false,
+    "shown": null
+   }
+  }
+ ]
+}
