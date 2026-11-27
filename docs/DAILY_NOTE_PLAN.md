@@ -84,8 +84,8 @@ Adversarial unit tests feed it deliberately bad notes (a typed number, "two perc
 - `anthropic` added to `requirements.txt` and the workflow's install step.
 
 ## Cost (estimates; measured before scheduling)
-- Daily note: about 1,500 input and 400 output tokens on Claude Opus 5.5 ($4/$20 per million tokens): about **$0.01–0.02 per day**, roughly $5 a year.
-- One full eval run (30 notes plus 30 judge calls): about **$0.50–1.00**.
+- Daily note: measured at about 2,600 input and 950 output tokens (thinking included) on Claude Opus 5.5 ($4/$20 per million tokens): about **$0.03 per day**, roughly $7.40 a year (checked independently).
+- One full eval run (30 notes plus 30 judge calls): **$1.04–1.06** measured.
 - Zak sets a monthly spend limit on the API account as a backstop.
 
 ## Out of scope for v1
