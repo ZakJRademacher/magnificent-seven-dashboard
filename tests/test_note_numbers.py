@@ -67,6 +67,10 @@ class SpelledOut(unittest.TestCase):
     def test_magnificent_seven_does_not_excuse_another_seven(self):
         self.assertEqual(find_banned_numbers("all seven of the Magnificent Seven"), ["seven"])
 
+    def test_the_s_and_p_500_is_a_name(self):
+        self.assertEqual(find_banned_numbers("Tech trails the S&P 500"), [])
+        self.assertEqual(find_banned_numbers("the S&P 500 and 500 more"), ["500"])
+
 
 class Dates(unittest.TestCase):
     def test_months_and_weekdays(self):

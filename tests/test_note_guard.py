@@ -105,6 +105,26 @@ class Guard(unittest.TestCase):
     def test_direction_word_outside_a_placeholder(self):
         self.assertRejected(with_bullet("Microsoft slipped: {MSFT.change_1d}."), "direction words")
 
+    def test_a_direction_word_backed_by_a_true_claim_is_fine(self):
+        # Found in a live eval: "the only stock in the group to fall", tagged only_down. Jan 2: only MSFT fell.
+        ok = with_bullet("{MSFT.move_1d}, the only stock in the group to fall.", [{"type": "only_down", "ids": ["MSFT"]}])
+        problems = guard.check(ok, FACTS)
+        self.assertFalse(any("direction words" in p for p in problems), problems)
+        self.assertFalse(any("is false" in p for p in problems), problems)
+
+    def test_the_backing_claim_must_point_the_same_way(self):
+        # A down-direction claim doesn't excuse an up word.
+        self.assertRejected(with_bullet("{MSFT.move_1d}, the only one; the rest rose.",
+                                        [{"type": "only_down", "ids": ["MSFT"]}]), "direction words")
+
+    def test_the_backing_claim_must_be_true(self):
+        self.assertRejected(with_bullet("{AAPL.move_1d}, the only stock to fall.",
+                                        [{"type": "only_down", "ids": ["AAPL"]}]), "is false")
+
+    def test_flat_is_never_backed(self):
+        self.assertRejected(with_bullet("{MSFT.move_1d}, the only one; most were flat.",
+                                        [{"type": "only_down", "ids": ["MSFT"]}]), "direction words")
+
     def test_advice(self):
         self.assertRejected(with_bullet("{AAPL.move_1d}; investors should watch it."), "advice")
 
@@ -114,6 +134,20 @@ class Guard(unittest.TestCase):
     def test_unknown_company_and_ticker(self):
         self.assertRejected(with_bullet("{AAPL.move_1d}, unlike Netflix."), "unknown names")
         self.assertRejected(with_bullet("{AAPL.move_1d}, unlike NFLX."), "unknown names")
+
+    def test_a_figure_without_its_company_name_is_rejected(self):
+        # Found by the judge in a live eval: "Apple fell 2.6% and fell 0.7%" (the 0.7% was Microsoft's).
+        self.assertRejected(with_bullet("{AAPL.move_1d} and {MSFT.change_1d}."), "must follow the same company's name")
+
+    def test_a_figure_after_its_company_name_is_fine(self):
+        for text in ["{AAPL.move_1d}, leaving it {AAPL.change_ytd}.", "Apple, meanwhile, {AAPL.change_1d}.",
+                     "Over the week, AAPL is {AAPL.change_5d}."]:
+            with self.subTest(text=text):
+                problems = guard.check(with_bullet(text), FACTS)
+                self.assertFalse(any("same company" in p for p in problems), problems)
+
+    def test_the_name_must_be_in_the_same_sentence(self):
+        self.assertRejected(with_bullet("{AAPL.move_1d}. It is {AAPL.change_ytd}."), "must follow the same company's name")
 
     def test_known_names_are_fine(self):
         self.assertEqual(guard.check(with_bullet("Among the Magnificent Seven, {AAPL.move_1d}."), FACTS), [])
@@ -143,7 +177,7 @@ class Guard(unittest.TestCase):
         facts = build_facts(prices, "2025-01-02")
         one = with_bullet("{AAPL.move_1d}, the best in the group.", [{"type": "leader", "ids": ["AAPL"]}])
         self.assertTrue(any("is false" in p for p in guard.check(one, facts)))
-        both = with_bullet("{AAPL.move_1d} and {NVDA.change_1d}, the best in the group.",
+        both = with_bullet("{AAPL.move_1d} and {NVDA.move_1d}, the best in the group.",
                            [{"type": "leader", "ids": ["NVDA", "AAPL"]}])
         note_ok = copy.deepcopy(both)
         note_ok["headline_claims"] = [{"type": "leader", "ids": ["AAPL", "NVDA"]}]

@@ -15,7 +15,7 @@ What counts as a number here (tests/test_note_numbers.py is the full spec):
 - month names (January ... December) and weekday names (Monday ... Sunday):
   dates come from the {date} placeholder
 Whole words only, ignoring case ("often" is fine, "SEVEN" is not); hyphenated
-words count ("seven-stock"); the name "Magnificent Seven" is allowed.
+words count ("seven-stock"); the names "Magnificent Seven" and "S&P 500" are allowed.
 """
 
 import re
@@ -35,9 +35,9 @@ WORDS = " ".join([SPELLED, UNITS, MONTHS, WEEKDAYS]).split()
 # \b treats a hyphen as a word edge, so "seven-stock" yields "seven".
 BANNED = re.compile(r"\d+|%|\$|\bper\s+cent\b|\b(?:" + "|".join(WORDS) + r")\b", re.IGNORECASE)
 
-# The dashboard's own name. Blanked out (same length) before searching, so another
-# "seven" in the same text is still caught.
-ALLOWED = re.compile(r"\bmagnificent\s+seven\b", re.IGNORECASE)
+# Names that contain a number: the dashboard's own name and the index's. Blanked out
+# (same length) before searching, so another "seven" or "500" in the same text is still caught.
+ALLOWED = re.compile(r"\bmagnificent\s+seven\b|\bS&P\s*500\b", re.IGNORECASE)
 
 
 def find_banned_numbers(text):

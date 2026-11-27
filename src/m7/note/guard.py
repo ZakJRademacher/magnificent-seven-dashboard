@@ -30,6 +30,16 @@ DIRECTION = {
     "rallies", "recovered", "recovery", "slump", "slumped", "spiked", "crashed", "crash", "weaker", "stronger",
 }
 
+# Direction words a verified group-direction claim can back up: "the only stock to fall" is
+# fine when the bullet carries a true only_down claim. Everything else in DIRECTION
+# (and "flat"/"unchanged") still has to come from a placeholder.
+UP_WORDS = {"rose", "rise", "rises", "rising", "risen", "gained", "gain", "gains", "gaining", "up", "higher",
+            "climbed", "climb", "advanced", "advance"}
+DOWN_WORDS = {"fell", "fall", "falls", "falling", "fallen", "lost", "lose", "loses", "losing", "loss", "losses",
+              "down", "lower", "declined", "decline", "dropped", "drop", "drops", "slipped", "dip", "dipped"}
+UP_CLAIMS = {"only_up", "all_up", "most_up"}
+DOWN_CLAIMS = {"only_down", "all_down", "most_down"}
+
 # Claims that need a tag, and the tag types that can support them.
 NEEDS_TAG = {
     "leader": ({"best", "top", "led", "leading", "leader", "strongest", "highest"}, {"leader"}),
@@ -105,13 +115,34 @@ def _unknown_names(own_text):
     return found
 
 
+def _unanchored_changes(text):
+    """{T.change_*} placeholders don't name the stock, so the same sentence must already have
+    named it (by name, ticker, or one of its own placeholders). Otherwise a true figure can
+    read as another company's: "Apple fell 2.6% and fell 0.7%"."""
+    found = []
+    for sentence in re.split(r"(?<=[.!?;])\s+", text):
+        for match in re.finditer(r"\{([A-Z]+)\.change_[a-z0-9]+\}", sentence):
+            ticker = match.group(1)
+            before = sentence[: match.start()]
+            names = [ticker, NAMES.get(ticker, ticker)]
+            named = f"{{{ticker}." in before or any(re.search(rf"\b{re.escape(n)}\b", before) for n in names)
+            if not named:
+                found.append(match.group(0))
+    return found
+
+
 def _check_text(label, text, claims, problems):
+    unanchored = _unanchored_changes(text)
+    if unanchored:
+        problems.append(f"{label}: {unanchored} must follow the same company's name in the sentence")
     own = strip_placeholders(text)
     numbers = find_banned_numbers(own)
     if numbers:
         problems.append(f"{label}: numbers must come from placeholders, found {numbers}")
     words = set(_words(own))
-    direction = sorted(words & DIRECTION)
+    tagged_types = {cl.get("type") for cl in claims}
+    backed = (UP_WORDS if tagged_types & UP_CLAIMS else set()) | (DOWN_WORDS if tagged_types & DOWN_CLAIMS else set())
+    direction = sorted((words & DIRECTION) - backed)
     if direction:
         problems.append(f"{label}: direction words must come from placeholders, found {direction}")
     banned = sorted(words & BANNED)
