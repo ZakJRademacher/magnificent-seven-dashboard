@@ -14,11 +14,15 @@ What counts as a number here (tests/test_note_numbers.py is the full spec):
   double, triple, twice
 - month names (January ... December) and weekday names (Monday ... Sunday):
   dates come from the {date} placeholder
+- forms of multiples: doubled, doubling, tripled, halved, quadrupled, and any "-fold"
+- any other numeral character: circled digits, superscripts, fractions, Roman numerals
+  (a regex digit class only matches decimal digits)
 Whole words only, ignoring case ("often" is fine, "SEVEN" is not); hyphenated
 words count ("seven-stock"); the names "Magnificent Seven" and "S&P 500" are allowed.
 """
 
 import re
+import unicodedata
 
 SPELLED = (
     "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen "
@@ -33,7 +37,8 @@ WORDS = " ".join([SPELLED, UNITS, MONTHS, WEEKDAYS]).split()
 
 # Digit runs, the two symbols, "per cent", then any listed word standing on its own.
 # \b treats a hyphen as a word edge, so "seven-stock" yields "seven".
-BANNED = re.compile(r"\d+|%|\$|\bper\s+cent\b|\b(?:" + "|".join(WORDS) + r")\b", re.IGNORECASE)
+MULTIPLES = r"\b(?:doubl|tripl|quadrupl|halv)(?:e|es|ed|ing)\b|\b\w*fold\b"
+BANNED = re.compile(r"\d+|%|\$|\bper\s+cent\b|" + MULTIPLES + r"|\b(?:" + "|".join(WORDS) + r")\b", re.IGNORECASE)
 
 # Names that contain a number: the dashboard's own name and the index's. Blanked out
 # (same length) before searching, so another "seven" or "500" in the same text is still caught.
@@ -42,4 +47,6 @@ ALLOWED = re.compile(r"\bmagnificent\s+seven\b|\bS&P\s*500\b", re.IGNORECASE)
 
 def find_banned_numbers(text):
     text = ALLOWED.sub(lambda m: " " * len(m.group()), text)
-    return BANNED.findall(text)
+    found = BANNED.findall(text)
+    found += [ch for ch in text if not ch.isascii() and unicodedata.numeric(ch, None) is not None]
+    return found

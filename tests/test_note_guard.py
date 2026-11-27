@@ -171,6 +171,52 @@ class Guard(unittest.TestCase):
         note["bullets"].pop()
         self.assertEqual(guard.check(note, FACTS), ["note: needs exactly 3 bullets"])
 
+    # Found in the Codex review of the branch.
+    def test_a_claim_must_be_about_a_stock_the_sentence_names(self):
+        self.assertRejected(with_bullet("{MSFT.move_1d}, the best result in the group.",
+                                        [{"type": "leader", "ids": ["AAPL"]}]), "names a stock the text doesn't")
+
+    def test_a_figure_follows_the_company_named_just_before_it(self):
+        self.assertRejected(with_bullet("{AAPL.move_1d}, while {MSFT.move_1d} and remained {AAPL.change_ytd}."),
+                            "must follow the same company's name")
+
+    def test_a_closing_price_needs_its_company_too(self):
+        self.assertRejected(with_bullet("{AAPL.move_1d}. Microsoft closed at {AAPL.close}."),
+                            "must follow the same company's name")
+        problems = guard.check(with_bullet("{AAPL.move_1d}, closing at {AAPL.close}."), FACTS)
+        self.assertFalse(any("same company" in p for p in problems), problems)
+
+    def test_advice_without_the_usual_words(self):
+        for text in ["{AAPL.move_1d}. Consider adding it to your portfolio.",
+                     "{AAPL.move_1d} after it missed earnings estimates.",
+                     "{AAPL.move_1d}, and analysts reported the news."]:
+            with self.subTest(text=text):
+                self.assertRejected(with_bullet(text), "advice")
+
+    def test_an_unknown_company_starting_a_sentence(self):
+        self.assertRejected(with_bullet("Broadcom announced results. {AAPL.move_1d}."), "unknown names")
+
+    def test_ordinary_sentence_starters_are_fine(self):
+        for text in ["Overall, {group.move_1d}.", "Elsewhere, {MSFT.move_1d}.", "Meanwhile, {MSFT.move_1d}.",
+                     "Apple, meanwhile, {AAPL.change_1d}."]:
+            with self.subTest(text=text):
+                problems = guard.check(with_bullet(text), FACTS)
+                self.assertFalse(any("unknown names" in p for p in problems), problems)
+
+    def test_an_empty_only_claim_is_false(self):
+        # On a day when all seven fall, an only_up tag with no stocks must not unlock "only" and "rose".
+        prices = _prices()
+        prices.loc[DATES[-1]] = prices.loc[DATES[-2]] * 0.9
+        facts = build_facts(prices, "2025-01-02")
+        problems = guard.check(with_bullet("Only Apple rose; {count.down}.", [{"type": "only_up", "ids": []}]), facts)
+        self.assertTrue(any(p.startswith("bullet 1: claim") and "is false" in p for p in problems), problems)
+
+    def test_malformed_claims_are_rejected_not_raised(self):
+        note = copy.deepcopy(GOOD)
+        note["headline_claims"] = [None]
+        self.assertEqual(guard.check(note, FACTS), ["headline: malformed claims"])
+        self.assertEqual(guard.check(with_bullet("{AAPL.move_1d}.", ["leader"]), FACTS), ["bullet 1: malformed"])
+
     def test_tie_must_name_every_tied_stock(self):
         prices = _prices()
         prices.loc[DATES[-1], "NVDA"] = 110.0  # NVDA +10.0% too, tying Apple
@@ -180,6 +226,7 @@ class Guard(unittest.TestCase):
         both = with_bullet("{AAPL.move_1d} and {NVDA.move_1d}, the best in the group.",
                            [{"type": "leader", "ids": ["NVDA", "AAPL"]}])
         note_ok = copy.deepcopy(both)
+        note_ok["headline"] = "Apple and Nvidia led a quiet session"  # a tie: "Apple led" alone would mislead
         note_ok["headline_claims"] = [{"type": "leader", "ids": ["AAPL", "NVDA"]}]
         self.assertEqual(guard.check(note_ok, facts), [])
 

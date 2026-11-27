@@ -78,5 +78,18 @@ class Dates(unittest.TestCase):
         self.assertEqual(find_banned_numbers("since january"), ["january"])
 
 
+class FoundInReview(unittest.TestCase):
+    def test_unicode_numerals(self):
+        # Python's \d misses these: circled, superscript, fractions, Roman numerals.
+        for text in ["closed at ⑩ dollars", "up ²", "a ½ move", "Ⅻ"]:
+            with self.subTest(text=text):
+                self.assertNotEqual(find_banned_numbers(text), [])
+
+    def test_inflected_multiples(self):
+        for text in ["Apple doubled", "Nvidia has tripled", "Tesla halved", "doubling its value", "a fivefold rise"]:
+            with self.subTest(text=text):
+                self.assertNotEqual(find_banned_numbers(text), [])
+
+
 if __name__ == "__main__":
     unittest.main()
