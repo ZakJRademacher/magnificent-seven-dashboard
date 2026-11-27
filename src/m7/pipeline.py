@@ -11,7 +11,9 @@ Each run:
 4. checks the data contract (all NYSE sessions present, no implausible moves, freshness),
 5. publishes site/data.json if nothing blocking failed, otherwise rebuilds it from the last good
    history so the page keeps showing correct data,
-6. appends the run to the ledger and writes site/status.json for the status page.
+6. writes the daily note (live runs only) and republishes the last good one (see m7.note.publish);
+   a note problem is a warning, never a reason to hold back the prices,
+7. appends the run to the ledger and writes site/status.json for the status page.
 
 Exit status: 0 when the run published (even with warnings), 1 when it failed.
 """
@@ -28,6 +30,7 @@ import pandas as pd
 
 from . import checks, data, ledger
 from .config import ROOT, START
+from .note import publish
 
 
 def fetch_live():
@@ -49,11 +52,14 @@ def _iso(ts):
     return pd.Timestamp(ts).tz_convert("UTC").strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def run(state_dir, site_dir, fetch=fetch_live, now=None, trigger="manual", accept_revisions=None):
+def run(state_dir, site_dir, fetch=fetch_live, now=None, trigger="manual", accept_revisions=None,
+        note="saved", client=None):
     """Run once. Returns the ledger record (also appended to the state's runs.jsonl).
 
     accept_revisions: a person's reason for accepting history changes the checks can't explain.
     The changes and the reason are logged as an event; use only after inspecting the diff.
+    note: "live" (may call the API), "saved", "example" or "off"; see m7.note.publish.
+    client: an Anthropic client for live notes (tests pass a stand-in).
     """
     rehearsal = now is not None  # a pretend time: record it as the finish time too
     now = pd.Timestamp(now or dt.datetime.now(dt.timezone.utc))
@@ -113,6 +119,16 @@ def run(state_dir, site_dir, fetch=fetch_live, now=None, trigger="manual", accep
     except Exception as exc:  # network errors, source format changes: recorded, never published
         record["error"] = f"{type(exc).__name__}: {exc}"
 
+    # The note comes after the prices are settled and before the run is recorded, so the ledger
+    # includes its result. It is written only from published history.
+    note_check, site_note, note_info = publish.note_step(
+        state.root, published, note, _iso(now), client=client,
+        prices_ok=record["status"] in ("published", "degraded"))
+    if note_check:
+        record["checks"].append(note_check.to_dict())
+    if note_info:
+        record["note"] = note_info
+
     # The page always shows the last good history; the status page shows what happened.
     record["as_of"] = f"{published.index[-1]:%Y-%m-%d}"
     record["finished"] = _iso(now if rehearsal else pd.Timestamp.now(tz="UTC"))
@@ -121,6 +137,10 @@ def run(state_dir, site_dir, fetch=fetch_live, now=None, trigger="manual", accep
     site.mkdir(parents=True, exist_ok=True)
     payload = data.site_payload(published, published_rates, updated=now.to_pydatetime())
     (site / "data.json").write_text(json.dumps(payload, separators=(",", ":")))
+    if site_note:
+        (site / "note.json").write_text(json.dumps(site_note, indent=1), encoding="utf-8")
+    elif note != "off":
+        (site / "note.json").unlink(missing_ok=True)  # never leave a note that failed its re-check
     status = ledger.status_payload(state.read(state.runs), state.read(state.events), now)
     (site / "status.json").write_text(json.dumps(status, separators=(",", ":"), default=str))
     for name, badge in ledger.badges(status, now).items():
@@ -153,10 +173,13 @@ def main(argv=None):
     parser.add_argument("--record", type=Path, help="also write this run's ledger record here")
     parser.add_argument("--accept-revisions", metavar="REASON",
                         help="accept history changes the checks can't explain, logging this reason (see docs/OPERATIONS.md)")
+    parser.add_argument("--note", choices=publish.MODES, default="saved",
+                        help="live: write today's note with the API (needs ANTHROPIC_API_KEY); saved: republish "
+                             "the last good note; example: the saved example (dry runs); off: no note")
     args = parser.parse_args(argv)
     fetch = fixture_fetcher(args.fixture) if args.fixture else fetch_live
     record = run(args.state, args.site, fetch=fetch, now=args.now, trigger=args.trigger,
-                 accept_revisions=args.accept_revisions or None)
+                 accept_revisions=args.accept_revisions or None, note=args.note)
     text = summary_markdown(record)
     print(text)
     if os.environ.get("GITHUB_STEP_SUMMARY"):

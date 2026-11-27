@@ -48,7 +48,7 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - run: pip install pandas yfinance exchange_calendars
+      - run: pip install pandas yfinance exchange_calendars anthropic
 
       - name: Check out the pipeline state (data branch)
         run: |
@@ -63,8 +63,14 @@ jobs:
         env:
           PYTHONPATH: src
           ACCEPT: ${{ github.event.inputs.accept_revisions }}
+          # The daily note is written only on scheduled and manual runs; pushes to main (the merge
+          # included) republish the saved note without calling the API. Setting the repository
+          # variable DAILY_NOTE to "off" turns the note off completely (docs/OPERATIONS.md).
+          NOTE_MODE: ${{ vars.DAILY_NOTE == 'off' && 'off' || ((github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'live' || 'saved') }}
+          # The only step that gets the key: a production-environment secret, main only.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_KEY }}
         run: |
-          python -m m7.pipeline --state state --site site --record run.json --accept-revisions "$ACCEPT" || true
+          python -m m7.pipeline --state state --site site --record run.json --accept-revisions "$ACCEPT" --note "$NOTE_MODE" || true
           status=$(python -c "import json, pathlib; p = pathlib.Path('run.json'); print(json.loads(p.read_text())['status'] if p.exists() else 'crashed')")
           echo "status=$status" >> "$GITHUB_OUTPUT"
           echo "Pipeline status: $status"
@@ -115,7 +121,7 @@ jobs:
         env:
           PYTHONPATH: src
         run: |
-          python -m m7.pipeline --state state --site site --record run.json || true
+          python -m m7.pipeline --state state --site site --record run.json --note example || true
           status=$(python -c "import json, pathlib; p = pathlib.Path('run.json'); print(json.loads(p.read_text())['status'] if p.exists() else 'crashed')")
           echo "status=$status" >> "$GITHUB_OUTPUT"
           echo "Pipeline status: $status"
