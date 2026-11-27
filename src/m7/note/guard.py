@@ -48,8 +48,9 @@ NEEDS_TAG = {
     "all": ({"all", "every"}, {"all_up", "all_down"}),
     "most": ({"most", "majority"}, {"most_up", "most_down"}),
     "only": ({"only", "alone"}, {"only_up", "only_down"}),
-    "vs_spy": ({"outperformed", "underperformed", "beat", "trailed", "ahead", "behind"},
-               {"group_beat_spy", "group_trailed_spy"}),
+    # Split by direction (found in review): a true "beat" tag must not excuse "trailed SPY".
+    "beat_spy": ({"outperformed", "beat", "ahead"}, {"group_beat_spy"}),
+    "trailed_spy": ({"underperformed", "trailed", "behind"}, {"group_trailed_spy"}),
 }
 
 # Never allowed: advice, predictions, and claims the data can't support.
@@ -92,7 +93,24 @@ WORD = re.compile(r"[A-Za-z][A-Za-z&'-]*")
 
 
 def _words(text):
-    return [w.lower() for w in WORD.findall(text)]
+    """Words, lower-cased, plus the parts of hyphenated ones ("must-buy" also yields "buy")."""
+    out = []
+    for w in WORD.findall(text):
+        out.append(w.lower())
+        if "-" in w:
+            out += [p.lower() for p in w.split("-") if p]
+    return out
+
+
+# Words that make something other than the last-named company the subject: a {T.change_*}
+# or {T.close} after them would read as theirs ("while the group was {AAPL.change_ytd}").
+OTHER_SUBJECTS = re.compile(r"\b(?:group|rest|others|index|market|fund|sector|peers|stocks|seven)\b|\bS&P\b"
+                            r"|\{(?:group|count)\.[a-z0-9_]+\}", re.IGNORECASE)
+# ...unless the word is the object of a preposition: "in the group", "of the seven".
+OBJECT_OF = re.compile(r"\b(?:in|of|among|across|within|from|for|than|with|to|on)\s+(?:the\s+)?(?:\w+\s+)?$",
+                       re.IGNORECASE)
+# The categories whose trigger words are about particular stocks.
+STOCK_TRIGGERS = ("leader", "laggard", "biggest", "only")
 
 
 def _claim_holds(claim, c):
@@ -127,7 +145,7 @@ def _unknown_names(own_text):
     """Capitalised words (not starting a sentence) and ticker-like words that aren't known series."""
     found = []
     for sentence in re.split(r"(?<=[.!?;:])\s+|^", own_text):
-        tokens = re.findall(r"[A-Za-z][A-Za-z&]*", sentence)
+        tokens = re.findall(r"[^\W\d_](?:[^\W\d_]|&)*", sentence)  # any alphabet: "Ørsted" is a name too
         for i, tok in enumerate(tokens):
             if tok in ALLOWED_NAMES:
                 continue
@@ -155,6 +173,30 @@ def _unnamed_claims(text, claims):
                    for t in (cl.get("ids") or []) if t not in named})
 
 
+def _misattributed_claims(text, claims):
+    """A trigger word ("led", "worst", "only") is about the company named just before it in the
+    sentence, and that company must be one its tag covers. Otherwise a true "leader: AAPL" tag
+    could vouch for "Microsoft led the group, while {AAPL.move_1d}"."""
+    covered = {}
+    for name in STOCK_TRIGGERS:
+        needs = NEEDS_TAG[name][1]
+        covered[name] = {t for cl in claims if cl.get("type") in needs for t in (cl.get("ids") or [])}
+    found = []
+    for sentence in re.split(r"(?<=[.!?;])\s+", text):
+        mentions = _mentions(sentence)
+        own = re.sub(r"\{[^{}]*\}", lambda m: " " * len(m.group()), sentence)
+        for word in WORD.finditer(own):
+            for name in STOCK_TRIGGERS:
+                if word.group().lower() in NEEDS_TAG[name][0] and mentions:
+                    # The company named last before the word ("{TSLA.move_1d}, the best ..."); if none,
+                    # the first one after it ("The best result: {TSLA.move_1d}").
+                    before = [t for pos, t in mentions if pos < word.start()]
+                    nearest = before[-1] if before else mentions[0][1]
+                    if nearest not in covered[name]:
+                        found.append(f"{word.group()!r} ({nearest})")
+    return found
+
+
 def _unanchored_changes(text):
     """{T.change_*} and {T.close} placeholders don't name the stock, so the company named most
     recently before them in the same sentence (by name, ticker, or one of its placeholders) must
@@ -162,7 +204,10 @@ def _unanchored_changes(text):
     "{AAPL.move_1d}, while {MSFT.move_1d} and remained {AAPL.change_ytd}"."""
     found = []
     for sentence in re.split(r"(?<=[.!?;])\s+", text):
-        mentions = _mentions(sentence)
+        # "the best result in the group" keeps Apple as the subject; "while the group was" doesn't.
+        others = [(m.start(), "*") for m in OTHER_SUBJECTS.finditer(sentence)
+                  if m.group().startswith("{") or not OBJECT_OF.search(sentence[: m.start()])]
+        mentions = sorted(_mentions(sentence) + others)
         for match in re.finditer(r"\{([A-Z]+)\.(?:change_[a-z0-9]+|close)\}", sentence):
             before = [t for pos, t in mentions if pos < match.start()]
             if not before or before[-1] != match.group(1):
@@ -174,6 +219,11 @@ def _check_text(label, text, claims, problems):
     unnamed = _unnamed_claims(text, claims)
     if unnamed:
         problems.append(f"{label}: a claim names a stock the text doesn't mention: {unnamed}")
+    misattributed = _misattributed_claims(text, claims)
+    if misattributed:
+        problems.append(f"{label}: {misattributed} names a stock outside its tagged claim")
+    if re.search(r"[\w$%]\{|\}[\w$%]", text):
+        problems.append(f"{label}: text glued to a placeholder would change its figure")
     unanchored = _unanchored_changes(text)
     if unanchored:
         problems.append(f"{label}: {unanchored} must follow the same company's name in the sentence")

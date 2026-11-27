@@ -217,6 +217,31 @@ class Guard(unittest.TestCase):
         self.assertEqual(guard.check(note, FACTS), ["headline: malformed claims"])
         self.assertEqual(guard.check(with_bullet("{AAPL.move_1d}.", ["leader"]), FACTS), ["bullet 1: malformed"])
 
+    # Found in the second Codex review.
+    def test_a_true_tag_cannot_vouch_for_a_claim_about_another_named_stock(self):
+        self.assertRejected(with_bullet("Microsoft led the group, while {AAPL.move_1d}.",
+                                        [{"type": "leader", "ids": ["AAPL"]}]), "names a stock outside")
+
+    def test_a_figure_after_another_subject_is_rejected(self):
+        for text in ["{AAPL.move_1d}, while the group was {AAPL.change_ytd}.",
+                     "{AAPL.move_1d}; the S&P 500 fund closed at {AAPL.close}."]:
+            with self.subTest(text=text):
+                self.assertRejected(with_bullet(text), "must follow the same company's name")
+
+    def test_text_glued_to_a_placeholder_is_rejected(self):
+        self.assertRejected(with_bullet("{AAPL.move_1d}, closing at {AAPL.close}k."), "glued to a placeholder")
+
+    def test_benchmark_wording_must_match_the_tag_direction(self):
+        # Jan 2: the group was ahead of SPY.
+        self.assertRejected(with_bullet("{AAPL.move_1d}; the group trailed SPY.",
+                                        [{"type": "group_beat_spy", "ids": []}]), "needs a tagged trailed_spy claim")
+
+    def test_banned_words_inside_hyphenated_words(self):
+        self.assertRejected(with_bullet("Apple is a must-buy: {AAPL.move_1d}."), "advice")
+
+    def test_names_with_non_english_capitals(self):
+        self.assertRejected(with_bullet("Ørsted was in focus as {AAPL.move_1d}."), "unknown names")
+
     def test_tie_must_name_every_tied_stock(self):
         prices = _prices()
         prices.loc[DATES[-1], "NVDA"] = 110.0  # NVDA +10.0% too, tying Apple
