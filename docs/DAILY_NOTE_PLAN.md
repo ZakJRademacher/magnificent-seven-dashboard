@@ -100,7 +100,7 @@ News or reasons behind moves; weekend or holiday notes; email or social posting;
 6. Pipeline integration; docs.
 7. Pull request, independent review, Zak's yes to merge; watch the first scheduled run.
 
-Zak writes (with help): the guard's banned-number check and the eval's claim grader, so every part can be explained in an interview.
+Zak writes (with help): the eval's claim grader, so every part can be explained in an interview. (The guard's banned-number check was offered too; Zak chose to have it written for him.)
 
 ## Acceptance
 - All existing tests still pass; new unit tests for facts, renderer, guard and writer (mocked) pass without an API key.
