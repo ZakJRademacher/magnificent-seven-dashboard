@@ -48,7 +48,10 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - run: pip install pandas yfinance exchange_calendars anthropic
+      - run: pip install pandas yfinance exchange_calendars
+      - name: Install the note's API client (optional; if it fails, the run publishes prices with a note warning)
+        continue-on-error: true
+        run: pip install anthropic
 
       - name: Check out the pipeline state (data branch)
         run: |

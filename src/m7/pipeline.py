@@ -121,9 +121,13 @@ def run(state_dir, site_dir, fetch=fetch_live, now=None, trigger="manual", accep
 
     # The note comes after the prices are settled and before the run is recorded, so the ledger
     # includes its result. It is written only from published history.
-    note_check, site_note, note_info = publish.note_step(
-        state.root, published, note, _iso(now), client=client,
-        prices_ok=record["status"] in ("published", "degraded"))
+    try:
+        note_check, site_note, note_info = publish.note_step(
+            state.root, published, note, _iso(now), client=client,
+            prices_ok=record["status"] in ("published", "degraded"))
+    except Exception as exc:  # the note is optional: nothing in it may stop the prices
+        note_check = checks.Check("note", "warn", f"note step failed: {type(exc).__name__}: {exc}"[:300], blocks=False)
+        site_note, note_info = None, None
     if note_check:
         record["checks"].append(note_check.to_dict())
     if note_info:
@@ -137,10 +141,13 @@ def run(state_dir, site_dir, fetch=fetch_live, now=None, trigger="manual", accep
     site.mkdir(parents=True, exist_ok=True)
     payload = data.site_payload(published, published_rates, updated=now.to_pydatetime())
     (site / "data.json").write_text(json.dumps(payload, separators=(",", ":")))
-    if site_note:
-        (site / "note.json").write_text(json.dumps(site_note, indent=1), encoding="utf-8")
-    elif note != "off":
-        (site / "note.json").unlink(missing_ok=True)  # never leave a note that failed its re-check
+    try:
+        if site_note:
+            (site / "note.json").write_text(json.dumps(site_note, indent=1), encoding="utf-8")
+        elif note != "off":
+            (site / "note.json").unlink(missing_ok=True)  # never leave a note that failed its re-check
+    except OSError as exc:
+        record["checks"].append(checks.Check("note", "warn", f"note file not written: {exc}", blocks=False).to_dict())
     status = ledger.status_payload(state.read(state.runs), state.read(state.events), now)
     (site / "status.json").write_text(json.dumps(status, separators=(",", ":"), default=str))
     for name, badge in ledger.badges(status, now).items():

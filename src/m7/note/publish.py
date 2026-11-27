@@ -47,9 +47,10 @@ def load_saved(state_dir):
     if not path.exists():
         return None
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except ValueError:
+        saved = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
         return None
+    return saved if isinstance(saved, dict) else None
 
 
 def publishable(saved, prices):
@@ -62,7 +63,7 @@ def publishable(saved, prices):
         if check(saved["note"], facts):
             return None
         return payload(saved["note"], facts, generated=saved.get("generated"))
-    except (KeyError, TypeError, ValueError):
+    except Exception:  # a corrupt or outdated saved note is simply not shown
         return None
 
 

@@ -168,6 +168,29 @@ class NoteInThePipeline(unittest.TestCase):
         self.assertTrue(self.site_note()["example"])
         self.assertFalse((self.state / "note.json").exists())
 
+    def test_a_corrupt_saved_note_never_stops_the_prices(self):
+        # Found in the Codex review: a malformed saved note used to raise during its re-check.
+        self.state.mkdir(parents=True, exist_ok=True)
+        (self.state / "note.json").write_text(json.dumps(
+            {"as_of": "2026-11-16", "facts_hash": "x", "note": {"headline": "{group.move_1d}",
+             "headline_claims": [None], "bullets": "nope"}}), encoding="utf-8")
+        record = self.run_once(mode="saved", client=NoCalls())
+        self.assertEqual(record["status"], "published")
+        self.assertEqual(json.loads((self.site / "data.json").read_text())["dates"][-1], "2026-11-16")
+        self.assertIsNone(self.site_note())
+
+    def test_an_unexpected_error_in_the_note_step_is_only_a_warning(self):
+        original = publish.note_step
+        publish.note_step = lambda *a, **k: (_ for _ in ()).throw(RuntimeError("surprise"))
+        try:
+            record = self.run_once(client=NoCalls())
+        finally:
+            publish.note_step = original
+        self.assertEqual(record["status"], "published")
+        check = self.note_check(record)
+        self.assertEqual(check["status"], "warn")
+        self.assertIn("surprise", check["detail"])
+
     def test_off_means_no_note_at_all(self):
         (self.site).mkdir(parents=True, exist_ok=True)
         record = self.run_once(mode="off", client=NoCalls())
