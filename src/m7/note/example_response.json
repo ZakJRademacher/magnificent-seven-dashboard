@@ -1,0 +1,22 @@
+{
+  "about": "A hand-written stand-in in the writer's answer format, used for dry runs and tests until a real model response is recorded. It is not model output.",
+  "as_of": "2026-11-16",
+  "note": {
+    "headline": "{group.move_1d}, and Apple was the strongest",
+    "headline_claims": [{"type": "leader", "ids": ["AAPL"]}],
+    "bullets": [
+      {
+        "text": "{GOOGL.move_1d} and {NVDA.move_1d}, tying for the weakest result.",
+        "claims": [{"type": "laggard", "ids": ["GOOGL", "NVDA"]}]
+      },
+      {
+        "text": "{AAPL.move_1d}, the strongest in the group, and remains {AAPL.change_ytd}.",
+        "claims": [{"type": "leader", "ids": ["AAPL"]}]
+      },
+      {
+        "text": "Across the group, {count.down}, leaving it {group.gap_to_spy_1d}.",
+        "claims": []
+      }
+    ]
+  }
+}

@@ -42,3 +42,9 @@ def render(note, facts):
         "headline": render_text(note["headline"], facts),
         "bullets": [render_text(b["text"], facts) for b in note["bullets"]],
     }
+
+
+def payload(note, facts, generated, example=False):
+    """site/note.json: what the page shows. Call only for a note the guard has passed."""
+    shown = render(note, facts)
+    return {**shown, "facts_hash": facts["hash"], "generated": generated, "example": bool(example)}
